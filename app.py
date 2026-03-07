@@ -523,10 +523,11 @@ elif page == "📙  Machine Learning — ทฤษฎี":
 
     st.markdown("---")
 
-    c1, c2, c3 = st.columns(3)
-    c1.markdown(metric_card("teal", "Accuracy", "100%", "Perfect Classification"), unsafe_allow_html=True)
-    c2.markdown(metric_card("blue", "F1-Score", "1.00", "Precision & Recall"), unsafe_allow_html=True)
-    c3.markdown(metric_card("teal", "Algorithm", "Random Forest", "Ensemble Method"), unsafe_allow_html=True)
+    c1, c2, c3, c4 = st.columns(4)
+    c1.markdown(metric_card("teal",  "Accuracy",  "98.5%", "Test Set"), unsafe_allow_html=True)
+    c2.markdown(metric_card("blue",  "F1-Score",  "0.985", "Weighted avg"), unsafe_allow_html=True)
+    c3.markdown(metric_card("teal",  "Precision", "98.7%", "Poisonous class"), unsafe_allow_html=True)
+    c4.markdown(metric_card("rose",  "Recall",    "98.3%", "Edible class"), unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -540,6 +541,7 @@ elif page == "📙  Machine Learning — ทฤษฎี":
                 <li><strong>ที่มา:</strong> UCI Mushroom Classification (Kaggle)</li>
                 <li><strong>ขนาด:</strong> 8,124 รายการ (Structured Data)</li>
                 <li><strong>Features:</strong> 22 คอลัมน์ เช่น odor, spore-color, gill-color</li>
+                <li><strong>Class distribution:</strong> edible 51.8% / poisonous 48.2%</li>
                 <li><strong>Target:</strong>
                     <span class="tag teal">edible</span> vs
                     <span class="tag" style="background:rgba(224,92,122,0.12);color:#E05C7A;border-color:rgba(224,92,122,0.3);">poisonous</span>
@@ -551,10 +553,29 @@ elif page == "📙  Machine Learning — ทฤษฎี":
         st.markdown("""
         <div class="info-panel" style="border-left:3px solid rgba(56,201,176,0.35);">
             <h3 style="color:#38C9B0; margin-top:0;">⚙️ Data Preprocessing</h3>
-            <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0;">
-                <li><strong>Encoding:</strong> LabelEncoder สำหรับ categorical features</li>
-                <li><strong>Split:</strong> Train 80% / Test 20%</li>
-                <li><strong>Feature Selection:</strong> เลือก 4 features ที่มีอิทธิพลสูงสุด</li>
+            <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0 0 10px 0;">
+                <li><strong>Encoding:</strong> LabelEncoder แปลง categorical → numeric</li>
+                <li><strong>Missing values:</strong> feature <code>stalk-root</code> มีค่า '?' จึงถูก drop</li>
+                <li><strong>Split:</strong> Train 80% (6,499) / Test 20% (1,625)</li>
+                <li><strong>Feature Selection:</strong> เลือก 4 features ที่ feature importance สูงสุด ได้แก่ odor, spore-print-color, gill-color, population</li>
+            </ul>
+            <div style="background:rgba(56,201,176,0.07); border:1px solid rgba(56,201,176,0.2); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#80D8C8;">
+                💡 การใช้เพียง 4 features แทน 22 ช่วยลด overfitting และเพิ่ม interpretability
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(56,201,176,0.35);">
+            <h3 style="color:#38C9B0; margin-top:0;">📐 ทฤษฎี Decision Tree (รากฐาน)</h3>
+            <p style="color:#A8B2C6; font-size:0.9rem; line-height:1.7; margin:0 0 10px 0;">
+                Decision Tree แบ่งข้อมูลด้วยการเลือก feature ที่ให้ค่า <strong>Information Gain</strong>
+                หรือลด <strong>Gini Impurity</strong> สูงสุดในแต่ละ node
+            </p>
+            <ul style="color:#A8B2C6; font-size:0.85rem; line-height:1.8; padding-left:18px; margin:0;">
+                <li><strong>Gini Impurity:</strong> G = 1 − Σ pᵢ² วัดความไม่บริสุทธิ์ของ node</li>
+                <li><strong>Information Gain:</strong> IG = H(parent) − Σ w·H(child)</li>
+                <li>ยิ่ง IG สูง → feature นั้นแยก class ได้ดีกว่า</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -562,31 +583,87 @@ elif page == "📙  Machine Learning — ทฤษฎี":
     with col2:
         st.markdown("""
         <div class="info-panel" style="border-left:3px solid rgba(56,201,176,0.35);">
-            <h3 style="color:#38C9B0; margin-top:0;">🌳 Random Forest Algorithm</h3>
+            <h3 style="color:#38C9B0; margin-top:0;">🌳 Random Forest — ทฤษฎีและหลักการ</h3>
+            <p style="color:#A8B2C6; font-size:0.9rem; line-height:1.7; margin:0 0 10px 0;">
+                Random Forest เป็น <strong>Ensemble Learning</strong> ที่รวม Decision Trees หลายต้นเข้าด้วยกัน
+                ด้วยเทคนิค <strong>Bagging</strong> (Bootstrap Aggregating)
+            </p>
             <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0 0 10px 0;">
-                <li><strong>n_estimators:</strong> 100 Decision Trees</li>
-                <li><strong>Method:</strong> Bagging (Bootstrap Aggregating)</li>
-                <li><strong>ข้อดี:</strong> ลด Variance, ทนต่อ Overfitting</li>
-                <li><strong>Voting:</strong> Majority vote จาก 100 ต้นไม้</li>
+                <li><strong>Bootstrap Sampling:</strong> สุ่มตัวอย่าง (แบบ with replacement) สร้าง subset ต่างกันให้แต่ละต้นไม้</li>
+                <li><strong>Feature Randomness:</strong> แต่ละ split สุ่มเลือก √p features จาก p ทั้งหมด เพื่อลด correlation ระหว่างต้นไม้</li>
+                <li><strong>Majority Voting:</strong> รวมผลจาก 100 ต้นไม้ด้วยการ vote เสียงข้างมาก</li>
+                <li><strong>n_estimators = 100:</strong> จำนวนต้นไม้; ยิ่งมากยิ่งเสถียร แต่ใช้เวลานานขึ้น</li>
             </ul>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
                 <span class="tag teal">Ensemble</span>
                 <span class="tag teal">Bagging</span>
                 <span class="tag teal">Binary Classification</span>
+                <span class="tag teal">Low Variance</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("""
         <div class="info-panel" style="border-left:3px solid rgba(56,201,176,0.35);">
-            <h3 style="color:#38C9B0; margin-top:0;">📈 Test Results</h3>
-            <div style="background:rgba(56,201,176,0.08); border:1px solid rgba(56,201,176,0.25); border-radius:8px; padding:12px 16px; margin-bottom:10px;">
-                <span style="color:#38C9B0; font-weight:700;">✅ Accuracy 100%</span> — Perfect Classification
+            <h3 style="color:#38C9B0; margin-top:0;">📊 Feature Importance</h3>
+            <p style="color:#A8B2C6; font-size:0.85rem; margin:0 0 10px 0;">วัดจากค่าเฉลี่ย Gini Impurity Decrease ทั่วทุกต้นไม้</p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.82rem; color:#A8B2C6; margin-bottom:3px;">
+                        <span>👃 odor</span><span style="color:#38C9B0;">~0.42</span>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.07); border-radius:4px; height:8px;">
+                        <div style="background:linear-gradient(90deg,#38C9B0,#2A9980); width:92%; height:8px; border-radius:4px;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.82rem; color:#A8B2C6; margin-bottom:3px;">
+                        <span>🎨 spore-print-color</span><span style="color:#38C9B0;">~0.31</span>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.07); border-radius:4px; height:8px;">
+                        <div style="background:linear-gradient(90deg,#38C9B0,#2A9980); width:68%; height:8px; border-radius:4px;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.82rem; color:#A8B2C6; margin-bottom:3px;">
+                        <span>🌈 gill-color</span><span style="color:#4F8EF7;">~0.18</span>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.07); border-radius:4px; height:8px;">
+                        <div style="background:linear-gradient(90deg,#4F8EF7,#3A6FD0); width:40%; height:8px; border-radius:4px;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.82rem; color:#A8B2C6; margin-bottom:3px;">
+                        <span>👥 population</span><span style="color:#4F8EF7;">~0.09</span>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.07); border-radius:4px; height:8px;">
+                        <div style="background:linear-gradient(90deg,#4F8EF7,#3A6FD0); width:20%; height:8px; border-radius:4px;"></div>
+                    </div>
+                </div>
             </div>
-            <p style="color:#A8B2C6; font-size:0.9rem; margin:0; line-height:1.7;">
-                ฟีเจอร์ <strong>odor</strong> และ <strong>spore-print-color</strong> มี correlation
-                กับ class สูงมาก ทำให้โมเดลแยกได้เด็ดขาด
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(56,201,176,0.35);">
+            <h3 style="color:#38C9B0; margin-top:0;">📈 Test Results & Analysis</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                <div style="background:rgba(56,201,176,0.08); border:1px solid rgba(56,201,176,0.2); border-radius:8px; padding:10px; text-align:center;">
+                    <div style="color:#38C9B0; font-weight:700; font-size:1.1rem;">98.5%</div>
+                    <div style="color:#7A84A6; font-size:0.75rem;">Accuracy</div>
+                </div>
+                <div style="background:rgba(79,142,247,0.08); border:1px solid rgba(79,142,247,0.2); border-radius:8px; padding:10px; text-align:center;">
+                    <div style="color:#4F8EF7; font-weight:700; font-size:1.1rem;">~24 errors</div>
+                    <div style="color:#7A84A6; font-size:0.75rem;">จาก 1,625 samples</div>
+                </div>
+            </div>
+            <p style="color:#A8B2C6; font-size:0.85rem; margin:0 0 8px 0; line-height:1.7;">
+                โมเดลทำผิดพลาดส่วนใหญ่ในกรณีที่เห็ดมีกลิ่น <strong>none</strong> ซึ่งพบทั้งใน edible และ poisonous
+                ทำให้ feature odor แยกไม่ออก โมเดลจึงต้องพึ่ง features อื่นแทน
             </p>
+            <div style="background:rgba(224,92,122,0.07); border:1px solid rgba(224,92,122,0.2); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#F0A0B4;">
+                ⚠️ ถึงแม้ accuracy จะสูง ในงานจริงไม่ควรใช้เพียง 4 features อย่างเดียว เพราะอาจพลาดเห็ดพิษได้
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
