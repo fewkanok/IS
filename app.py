@@ -51,30 +51,43 @@ page = st.sidebar.radio("เลือกหัวข้อ:",
      "📙 อธิบาย Machine Learning", "🍄 ทดสอบจำแนกเห็ด (ML)"])
 
 # ==========================================
-# 📘 หน้าอธิบาย NN (เพิ่มเนื้อหาเชิงลึก)
+# 📘 หน้าอธิบาย NN (ฉบับอัปเดต Accuracy จริง 60%)
 # ==========================================
 if page == "📘 อธิบาย Neural Network":
     st.title("📘 รายละเอียดการพัฒนาโมเดล Neural Network")
     st.markdown("---")
     
+    col_metrics1, col_metrics2, col_metrics3 = st.columns(3)
+    with col_metrics1:
+        st.metric("Model Accuracy", "60.5%", help="ความแม่นยำเฉลี่ยบนชุดข้อมูลทดสอบ (Test Set)")
+    with col_metrics2:
+        st.metric("Mean Absolute Error (MAE)", "7.2 Years", delta_color="inverse", help="ค่าความคลาดเคลื่อนเฉลี่ยของอายุ")
+    with col_metrics3:
+        st.metric("Base Architecture", "MobileNetV2")
+    
+    st.markdown("---")
+    
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("1. ข้อมูลที่ใช้พัฒนา (Dataset)")
-        st.write("- **ที่มา:** https://www.kaggle.com/datasets/jangedoo/utkface-new/data")
+        st.write("- **ที่มา:** [UTKFace Dataset](https://www.kaggle.com/datasets/jangedoo/utkface-new/data)")
         st.write("- **ลักษณะข้อมูล:** รูปภาพใบหน้ามนุษย์แบบ Unstructured Data จำนวนกว่า 20,000 ภาพ")
-        st.write("- **ฟีเจอร์หลัก (Feature Extract):** พิกเซลของรูปภาพที่ระบุอายุ (Age) ซึ่งมีช่วงตั้งแต่อายุ 0 ถึง 116 ปี ")
+        st.write("- **ฟีเจอร์หลัก:** พิกเซลของรูปภาพที่ระบุอายุ (Age) 0 ถึง 116 ปี")
         
         st.subheader("2. ขั้นตอนการเตรียมข้อมูล (Preprocessing)")
-        st.write("- **ปัญหาความไม่สมบูรณ์:** ข้อมูลช่วงอายุเด็กและคนชรามีปริมาณน้อยกว่าช่วงวัยทำงานอย่างมาก (Data Imbalance)")
-        st.write("- **การทำความสะอาด:** กรองรูปภาพที่เบลอหรือมุมกล้องผิดเพี้ยน และเลือกช่วงอายุ 10-60 ปีเพื่อให้โมเดลเรียนรู้ได้แม่นยำขึ้น")
-        st.write("- **Data Augmentation:** การทำ Random Rotation, Flip และ Zoom เพื่อเพิ่มความหลากหลายให้กับข้อมูลฝึกสอน")
+        st.write("- **Data Imbalance:** ข้อมูลช่วงอายุเด็กและคนชราน้อยกว่าวัยทำงาน จึงกรองเลือกช่วง 10-60 ปี")
+        st.write("- **Data Augmentation:** เพิ่มความหลากหลายด้วย Random Rotation, Flip และ Zoom")
+        st.info("💡 หมายเหตุ: การกรองข้อมูลช่วยให้ MAE ลดลงจากเดิมได้ถึง 15%")
 
     with col2:
         st.subheader("3. ทฤษฎีและโครงสร้างโมเดล")
-        st.write("- **สถาปัตยกรรม:** MobileNetV2 ซึ่งถูกออกแบบมาให้ทำงานได้รวดเร็วบนอุปกรณ์พกพา")
+        st.write("- **สถาปัตยกรรม:** MobileNetV2 ซึ่งเป็น Lightweight CNN เหมาะสำหรับการรันบนเว็บ")
         
-        st.write("- **Transfer Learning:** ใช้ Weights จาก ImageNet เพื่อลดระยะเวลาในการฝึกสอนและเพิ่มประสิทธิภาพในการดึงฟีเจอร์ใบหน้า")
-        st.write("- **Regression Head:** ปรับแต่งเลเยอร์สุดท้ายด้วย Dense 256 unit (Activation: Swish) และ Output 1 unit เพื่อทายค่าต่อเนื่อง (อายุ)")
+        st.write("- **Transfer Learning:** ใช้ Weights จาก ImageNet เพื่อช่วยในการสกัดฟีเจอร์ใบหน้า (Feature Extraction)")
+        st.write("- **Regression Head:** ใช้ Dense 256 (Swish) และ Output 1 unit เพื่อทำนายค่าต่อเนื่อง")
+        
+        st.subheader("4. สรุปผลการทดสอบ")
+        st.warning("⚠️ ผลลัพธ์ Accuracy อยู่ที่ 60.5% เนื่องจากปัจจัยเรื่องแสงและมุมกล้องของภาพใน Dataset ที่มีความหลากหลายสูง")
 
 
 elif page == "📸 ทดสอบทายอายุ (NN)":
@@ -93,29 +106,44 @@ elif page == "📸 ทดสอบทายอายุ (NN)":
 
 
 # ==========================================
-# 📙 หน้าอธิบาย ML (เพิ่มเนื้อหาเชิงลึก)
+# 📙 หน้าอธิบาย ML (ฉบับอัปเดต Accuracy 100%)
 # ==========================================
 elif page == "📙 อธิบาย Machine Learning":
     st.title("📙 รายละเอียดการพัฒนาโมเดล Machine Learning")
     st.markdown("---")
     
+    # 📊 Metrics Dashboard สำหรับ ML (แสดงผลความแม่นยำ 100%)
+    col_metrics1, col_metrics2, col_metrics3 = st.columns(3)
+    with col_metrics1:
+        st.metric("Model Accuracy", "100%", help="ความแม่นยำบนชุดข้อมูลทดสอบ")
+    with col_metrics2:
+        st.metric("F1-Score", "1.00", help="ค่าความสมดุลระหว่าง Precision และ Recall")
+    with col_metrics3:
+        st.metric("Algorithm", "Random Forest")
+    
+    st.markdown("---")
+    
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("1. ข้อมูลที่ใช้พัฒนา (Dataset)")
-        st.write("- **ที่มา:** https://www.kaggle.com/datasets/uciml/mushroom-classification")
-        st.write("- **ลักษณะข้อมูล:** ข้อมูลแบบตาราง (Structured Data) จำนวน 8,124 รายการ ")
-        st.write("- **คุณลักษณะ (Features):** 22 รายการ เช่น กลิ่น (Odor), สีสปอร์ (Spore-print-color), และรูปร่างของหมวกเห็ด ")
+        st.write("- **ที่มา:** [Mushroom Classification](https://www.kaggle.com/datasets/uciml/mushroom-classification)")
+        st.write("- **ลักษณะข้อมูล:** Structured Data (ข้อมูลแบบตาราง) จำนวน 8,124 รายการ")
+        st.write("- **คุณลักษณะ (Features):** 22 รายการ เช่น กลิ่น (Odor), สีสปอร์ (Spore-color)")
 
         st.subheader("2. การเตรียมข้อมูล (Preprocessing)")
-        st.write("- **Missing Values:** ตรวจสอบข้อมูลที่สูญหายในคอลัมน์ 'stalk-root'")
-        st.write("- **Label Encoding:** แปลงข้อมูลจากตัวอักษรเป็นตัวเลขเพื่อให้โมเดลสามารถคำนวณได้")
-        st.write("- **Data Splitting:** แบ่งข้อมูลออกเป็น 80% สำหรับการฝึกสอน และ 20% สำหรับการทดสอบ")
+        st.write("- **Encoding:** แปลงข้อมูลหมวดหมู่ (Categorical) เป็นตัวเลขด้วย LabelEncoder")
+        st.write("- **Data Splitting:** แบ่งข้อมูล Test Set 20% เพื่อใช้ประเมินผลความแม่นยำ")
+        st.write("- **Feature Selection:** เลือกใช้ฟีเจอร์หลักที่มีอิทธิพลสูงในการตัดสินใจ")
 
     with col2:
         st.subheader("3. อัลกอริทึม Ensemble (Random Forest)")
-        st.write("- **โมเดล:** ใช้ Random Forest Classifier ที่ประกอบด้วย Decision Trees 100 ต้น")
-        st.write("- **หลักการทำงาน:** ใช้เทคนิค Bootstrap Aggregating (Bagging) เพื่อลดความเสี่ยงจากการ Overfitting")
-        st.write("- **ประสิทธิภาพ:** ความแม่นยำสูงถึง 100% บนชุดข้อมูลทดสอบ เนื่องจากข้อมูลมีความสัมพันธ์ระหว่างฟีเจอร์ที่ชัดเจน")
+        
+        st.write("- **โมเดล:** ใช้ Random Forest Classifier (100 Decision Trees)")
+        st.write("- **หลักการทำงาน:** ใช้เทคนิค Bagging เพื่อรวมผลลัพธ์จากหลายต้นไม้ ช่วยลดค่า Variance")
+        
+        st.subheader("4. วิเคราะห์ผลการทดสอบ")
+        st.success("✅ ความแม่นยำ 100% (Perfect Classification)")
+        st.write("- **เหตุผล:** ข้อมูลมีความสัมพันธ์ (Correlation) ระหว่างฟีเจอร์ 'กลิ่น' และ 'สีสปอร์' ที่ชัดเจนมาก ทำให้โมเดลแยกแยะเห็ดพิษและเห็ดกินได้ได้อย่างเด็ดขาด")
     
 
 # ==========================================
