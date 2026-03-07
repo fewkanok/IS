@@ -358,13 +358,7 @@ def metric_card(cls, label, value, sub):
     </div>
     """
 
-def info_panel(icon_title, content_html, accent_color="#4F8EF7"):
-    st.markdown(f"""
-    <div class="info-panel" style="border-left: 3px solid {accent_color}20;">
-        <h3 style="color:{accent_color};">{icon_title}</h3>
-        {content_html}
-    </div>
-    """, unsafe_allow_html=True)
+
 
 # ══════════════════════════════════════════════════════════════════════════
 # PAGE: Neural Network Theory
@@ -392,51 +386,63 @@ if page == "📘  Neural Network — ทฤษฎี":
     col1, col2 = st.columns(2, gap="large")
 
     with col1:
-        info_panel("📊 Dataset", """
-        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
-            <li><strong>ที่มา:</strong> UTKFace Dataset (Kaggle)</li>
-            <li><strong>ขนาด:</strong> ภาพใบหน้า 20,000+ รูป (Unstructured)</li>
-            <li><strong>Target:</strong> อายุ 0–116 ปี ระบุในชื่อไฟล์</li>
-            <li><strong>Filter:</strong> คัดเฉพาะช่วง <span class="tag">10–60 ปี</span> เพื่อลด imbalance</li>
-        </ul>
-        """)
-
-        info_panel("⚙️ Data Preprocessing", """
-        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
-            <li><strong>Imbalance handling:</strong> กรองช่วงอายุที่มีข้อมูลน้อย</li>
-            <li><strong>Augmentation:</strong> Random Rotation, Flip, Zoom</li>
-            <li><strong>Normalization:</strong> pixel / 255.0 → [0, 1]</li>
-            <li><strong>Input size:</strong> 128 × 128 × 3</li>
-        </ul>
-        <div style="background:rgba(79,142,247,0.08); border:1px solid rgba(79,142,247,0.2); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#A8C4F7; margin-top:8px;">
-            💡 การกรองข้อมูลช่วยลด MAE ได้ถึง ~15%
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(79,142,247,0.35);">
+            <h3 style="color:#4F8EF7; margin-top:0;">📊 Dataset</h3>
+            <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0;">
+                <li><strong>ที่มา:</strong> UTKFace Dataset (Kaggle)</li>
+                <li><strong>ขนาด:</strong> ภาพใบหน้า 20,000+ รูป (Unstructured)</li>
+                <li><strong>Target:</strong> อายุ 0–116 ปี ระบุในชื่อไฟล์</li>
+                <li><strong>Filter:</strong> คัดเฉพาะช่วง <span class="tag">10–60 ปี</span> เพื่อลด imbalance</li>
+            </ul>
         </div>
-        """)
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(79,142,247,0.35);">
+            <h3 style="color:#4F8EF7; margin-top:0;">⚙️ Data Preprocessing</h3>
+            <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0 0 10px 0;">
+                <li><strong>Imbalance handling:</strong> กรองช่วงอายุที่มีข้อมูลน้อย</li>
+                <li><strong>Augmentation:</strong> Random Rotation, Flip, Zoom</li>
+                <li><strong>Normalization:</strong> pixel / 255.0 → [0, 1]</li>
+                <li><strong>Input size:</strong> 128 × 128 × 3</li>
+            </ul>
+            <div style="background:rgba(79,142,247,0.08); border:1px solid rgba(79,142,247,0.2); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#A8C4F7;">
+                💡 การกรองข้อมูลช่วยลด MAE ได้ถึง ~15%
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col2:
-        info_panel("🔬 Model Architecture", """
-        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
-            <li><strong>Base:</strong> MobileNetV2 (pretrained ImageNet)</li>
-            <li><strong>Strategy:</strong> Feature Extraction → Fine-tuning</li>
-            <li><strong>Head:</strong> GlobalAvgPool → Dense 256 (Swish) → Output 1</li>
-            <li><strong>Loss:</strong> MAE &nbsp;·&nbsp; Optimizer: Adam</li>
-        </ul>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">
-            <span class="tag">Lightweight CNN</span>
-            <span class="tag">Transfer Learning</span>
-            <span class="tag">Regression Task</span>
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(79,142,247,0.35);">
+            <h3 style="color:#4F8EF7; margin-top:0;">🔬 Model Architecture</h3>
+            <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0 0 10px 0;">
+                <li><strong>Base:</strong> MobileNetV2 (pretrained ImageNet)</li>
+                <li><strong>Strategy:</strong> Feature Extraction → Fine-tuning</li>
+                <li><strong>Head:</strong> GlobalAvgPool → Dense 256 (Swish) → Output 1</li>
+                <li><strong>Loss:</strong> MAE · Optimizer: Adam</li>
+            </ul>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <span class="tag">Lightweight CNN</span>
+                <span class="tag">Transfer Learning</span>
+                <span class="tag">Regression Task</span>
+            </div>
         </div>
-        """)
+        """, unsafe_allow_html=True)
 
-        info_panel("📈 Test Results", """
-        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
-            <li>Accuracy: <strong style="color:#4F8EF7;">60.5%</strong> (±5 ปี threshold)</li>
-            <li>MAE: <strong style="color:#E05C7A;">7.2 ปี</strong></li>
-        </ul>
-        <div style="background:rgba(224,92,122,0.08); border:1px solid rgba(224,92,122,0.2); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#F0A0B4; margin-top:8px;">
-            ⚠️ ความหลากหลายของแสงและมุมกล้องใน dataset มีผลต่อ accuracy
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(79,142,247,0.35);">
+            <h3 style="color:#4F8EF7; margin-top:0;">📈 Test Results</h3>
+            <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0 0 10px 0;">
+                <li>Accuracy: <strong style="color:#4F8EF7;">60.5%</strong> (±5 ปี threshold)</li>
+                <li>MAE: <strong style="color:#E05C7A;">7.2 ปี</strong></li>
+            </ul>
+            <div style="background:rgba(224,92,122,0.08); border:1px solid rgba(224,92,122,0.2); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#F0A0B4;">
+                ⚠️ ความหลากหลายของแสงและมุมกล้องใน dataset มีผลต่อ accuracy
+            </div>
         </div>
-        """)
+        """, unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -527,47 +533,62 @@ elif page == "📙  Machine Learning — ทฤษฎี":
     col1, col2 = st.columns(2, gap="large")
 
     with col1:
-        info_panel("📊 Dataset", """
-        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
-            <li><strong>ที่มา:</strong> UCI Mushroom Classification (Kaggle)</li>
-            <li><strong>ขนาด:</strong> 8,124 รายการ (Structured Data)</li>
-            <li><strong>Features:</strong> 22 คอลัมน์ เช่น odor, spore-color, gill-color</li>
-            <li><strong>Target:</strong> <span class="tag teal">edible</span> vs <span class="tag" style="background:rgba(224,92,122,0.12);color:#E05C7A;border-color:rgba(224,92,122,0.3);">poisonous</span></li>
-        </ul>
-        """, accent_color="#38C9B0")
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(56,201,176,0.35);">
+            <h3 style="color:#38C9B0; margin-top:0;">📊 Dataset</h3>
+            <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0;">
+                <li><strong>ที่มา:</strong> UCI Mushroom Classification (Kaggle)</li>
+                <li><strong>ขนาด:</strong> 8,124 รายการ (Structured Data)</li>
+                <li><strong>Features:</strong> 22 คอลัมน์ เช่น odor, spore-color, gill-color</li>
+                <li><strong>Target:</strong>
+                    <span class="tag teal">edible</span> vs
+                    <span class="tag" style="background:rgba(224,92,122,0.12);color:#E05C7A;border-color:rgba(224,92,122,0.3);">poisonous</span>
+                </li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
-        info_panel("⚙️ Data Preprocessing", """
-        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
-            <li><strong>Encoding:</strong> LabelEncoder สำหรับ categorical features</li>
-            <li><strong>Split:</strong> Train 80% / Test 20%</li>
-            <li><strong>Feature Selection:</strong> เลือก 4 features ที่มีอิทธิพลสูงสุด</li>
-        </ul>
-        """, accent_color="#38C9B0")
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(56,201,176,0.35);">
+            <h3 style="color:#38C9B0; margin-top:0;">⚙️ Data Preprocessing</h3>
+            <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0;">
+                <li><strong>Encoding:</strong> LabelEncoder สำหรับ categorical features</li>
+                <li><strong>Split:</strong> Train 80% / Test 20%</li>
+                <li><strong>Feature Selection:</strong> เลือก 4 features ที่มีอิทธิพลสูงสุด</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col2:
-        info_panel("🌳 Random Forest Algorithm", """
-        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
-            <li><strong>n_estimators:</strong> 100 Decision Trees</li>
-            <li><strong>Method:</strong> Bagging (Bootstrap Aggregating)</li>
-            <li><strong>ข้อดี:</strong> ลด Variance, ทนต่อ Overfitting</li>
-            <li><strong>Voting:</strong> Majority vote จาก 100 ต้นไม้</li>
-        </ul>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">
-            <span class="tag teal">Ensemble</span>
-            <span class="tag teal">Bagging</span>
-            <span class="tag teal">Binary Classification</span>
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(56,201,176,0.35);">
+            <h3 style="color:#38C9B0; margin-top:0;">🌳 Random Forest Algorithm</h3>
+            <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0 0 10px 0;">
+                <li><strong>n_estimators:</strong> 100 Decision Trees</li>
+                <li><strong>Method:</strong> Bagging (Bootstrap Aggregating)</li>
+                <li><strong>ข้อดี:</strong> ลด Variance, ทนต่อ Overfitting</li>
+                <li><strong>Voting:</strong> Majority vote จาก 100 ต้นไม้</li>
+            </ul>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <span class="tag teal">Ensemble</span>
+                <span class="tag teal">Bagging</span>
+                <span class="tag teal">Binary Classification</span>
+            </div>
         </div>
-        """, accent_color="#38C9B0")
+        """, unsafe_allow_html=True)
 
-        info_panel("📈 Test Results", """
-        <div style="background:rgba(56,201,176,0.08); border:1px solid rgba(56,201,176,0.25); border-radius:8px; padding:12px 16px; margin-bottom:10px;">
-            <span style="color:#38C9B0; font-weight:700;">✅ Accuracy 100%</span> — Perfect Classification
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(56,201,176,0.35);">
+            <h3 style="color:#38C9B0; margin-top:0;">📈 Test Results</h3>
+            <div style="background:rgba(56,201,176,0.08); border:1px solid rgba(56,201,176,0.25); border-radius:8px; padding:12px 16px; margin-bottom:10px;">
+                <span style="color:#38C9B0; font-weight:700;">✅ Accuracy 100%</span> — Perfect Classification
+            </div>
+            <p style="color:#A8B2C6; font-size:0.9rem; margin:0; line-height:1.7;">
+                ฟีเจอร์ <strong>odor</strong> และ <strong>spore-print-color</strong> มี correlation
+                กับ class สูงมาก ทำให้โมเดลแยกได้เด็ดขาด
+            </p>
         </div>
-        <p style="color:#A8B2C6; font-size:0.9rem; margin:0; line-height:1.7;">
-            ฟีเจอร์ <strong>odor</strong> และ <strong>spore-print-color</strong> มี correlation
-            กับ class สูงมาก ทำให้โมเดลแยกได้เด็ดขาด
-        </p>
-        """, accent_color="#38C9B0")
+        """, unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════
