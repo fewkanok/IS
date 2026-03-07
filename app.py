@@ -376,10 +376,11 @@ if page == "📘  Neural Network — ทฤษฎี":
     st.markdown("---")
 
     # Metrics
-    c1, c2, c3 = st.columns(3)
-    c1.markdown(metric_card("blue", "Accuracy", "60.5%", "Test Set"), unsafe_allow_html=True)
+    c1, c2, c3, c4 = st.columns(4)
+    c1.markdown(metric_card("blue", "Accuracy", "60.5%", "±5 ปี threshold"), unsafe_allow_html=True)
     c2.markdown(metric_card("rose", "Mean Abs. Error", "7.2 yrs", "Average deviation"), unsafe_allow_html=True)
     c3.markdown(metric_card("teal", "Architecture", "MobileNetV2", "Transfer Learning"), unsafe_allow_html=True)
+    c4.markdown(metric_card("blue", "Input Size", "128×128", "RGB pixels"), unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -394,6 +395,7 @@ if page == "📘  Neural Network — ทฤษฎี":
                 <li><strong>ขนาด:</strong> ภาพใบหน้า 20,000+ รูป (Unstructured)</li>
                 <li><strong>Target:</strong> อายุ 0–116 ปี ระบุในชื่อไฟล์</li>
                 <li><strong>Filter:</strong> คัดเฉพาะช่วง <span class="tag">10–60 ปี</span> เพื่อลด imbalance</li>
+                <li><strong>หลังกรอง:</strong> เหลือประมาณ 14,000 รูป</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
@@ -403,12 +405,33 @@ if page == "📘  Neural Network — ทฤษฎี":
             <h3 style="color:#4F8EF7; margin-top:0;">⚙️ Data Preprocessing</h3>
             <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0 0 10px 0;">
                 <li><strong>Imbalance handling:</strong> กรองช่วงอายุที่มีข้อมูลน้อย</li>
-                <li><strong>Augmentation:</strong> Random Rotation, Flip, Zoom</li>
+                <li><strong>Augmentation:</strong> Random Rotation ±15°, Horizontal Flip, Zoom 10%</li>
                 <li><strong>Normalization:</strong> pixel / 255.0 → [0, 1]</li>
-                <li><strong>Input size:</strong> 128 × 128 × 3</li>
+                <li><strong>Resize:</strong> ทุกภาพถูก resize เป็น 128 × 128 × 3</li>
+                <li><strong>Split:</strong> Train 80% / Validation 10% / Test 10%</li>
             </ul>
             <div style="background:rgba(79,142,247,0.08); border:1px solid rgba(79,142,247,0.2); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#A8C4F7;">
-                💡 การกรองข้อมูลช่วยลด MAE ได้ถึง ~15%
+                💡 Data Augmentation ช่วยให้โมเดล generalize ได้ดีขึ้น ลด overfitting
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(79,142,247,0.35);">
+            <h3 style="color:#4F8EF7; margin-top:0;">🧠 ทฤษฎี Neural Network</h3>
+            <p style="color:#A8B2C6; font-size:0.9rem; line-height:1.7; margin:0 0 10px 0;">
+                Neural Network เลียนแบบการทำงานของเซลล์ประสาทในสมอง ประกอบด้วย <strong>Layers</strong>
+                ที่เชื่อมต่อกันผ่าน <strong>Weights (w)</strong> และ <strong>Biases (b)</strong>
+            </p>
+            <ul style="color:#A8B2C6; font-size:0.85rem; line-height:1.8; padding-left:18px; margin:0 0 10px 0;">
+                <li><strong>Forward Pass:</strong> z = Σ(wᵢxᵢ) + b → ผ่าน Activation function → ได้ output</li>
+                <li><strong>Activation (Swish):</strong> f(x) = x · σ(x) ให้ gradient ที่ smooth กว่า ReLU</li>
+                <li><strong>Loss (MAE):</strong> L = (1/n) Σ |ŷᵢ − yᵢ| วัดความคลาดเคลื่อนเฉลี่ย</li>
+                <li><strong>Backpropagation:</strong> คำนวณ gradient ย้อนกลับทีละ layer</li>
+                <li><strong>Adam Optimizer:</strong> ปรับ learning rate แบบ adaptive ต่อ parameter</li>
+            </ul>
+            <div style="background:rgba(79,142,247,0.07); border:1px solid rgba(79,142,247,0.2); border-radius:8px; padding:10px 14px; font-size:0.82rem; color:#A8C4F7;">
+                w ← w − η · ∂L/∂w &nbsp;&nbsp; (η = learning rate)
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -416,30 +439,63 @@ if page == "📘  Neural Network — ทฤษฎี":
     with col2:
         st.markdown("""
         <div class="info-panel" style="border-left:3px solid rgba(79,142,247,0.35);">
-            <h3 style="color:#4F8EF7; margin-top:0;">🔬 Model Architecture</h3>
-            <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0 0 10px 0;">
-                <li><strong>Base:</strong> MobileNetV2 (pretrained ImageNet)</li>
-                <li><strong>Strategy:</strong> Feature Extraction → Fine-tuning</li>
-                <li><strong>Head:</strong> GlobalAvgPool → Dense 256 (Swish) → Output 1</li>
-                <li><strong>Loss:</strong> MAE · Optimizer: Adam</li>
+            <h3 style="color:#4F8EF7; margin-top:0;">🔬 ทฤษฎี CNN และ MobileNetV2</h3>
+            <p style="color:#A8B2C6; font-size:0.9rem; line-height:1.7; margin:0 0 10px 0;">
+                <strong>CNN (Convolutional Neural Network)</strong> ออกแบบมาเพื่อประมวลผลรูปภาพ
+                โดยใช้ <strong>Convolutional Layer</strong> สกัด feature จาก local patterns
+            </p>
+            <ul style="color:#A8B2C6; font-size:0.85rem; line-height:1.8; padding-left:18px; margin:0 0 10px 0;">
+                <li><strong>Conv Layer:</strong> ใช้ filter/kernel เลื่อนทับภาพ สกัด edge, texture, shape</li>
+                <li><strong>Pooling:</strong> ลดขนาด feature map (Max/Average Pooling)</li>
+                <li><strong>Depthwise Separable Conv:</strong> MobileNetV2 แยก spatial และ channel convolution ลด parameter 8–9x</li>
+                <li><strong>Inverted Residual Block:</strong> Expand → Depthwise Conv → Project พร้อม skip connection</li>
+                <li><strong>GlobalAvgPooling:</strong> แปลง feature map 4×4×1280 → vector 1280 มิติ</li>
             </ul>
             <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                <span class="tag">Lightweight CNN</span>
-                <span class="tag">Transfer Learning</span>
-                <span class="tag">Regression Task</span>
+                <span class="tag">Depthwise Conv</span>
+                <span class="tag">Skip Connection</span>
+                <span class="tag">Lightweight</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("""
         <div class="info-panel" style="border-left:3px solid rgba(79,142,247,0.35);">
-            <h3 style="color:#4F8EF7; margin-top:0;">📈 Test Results</h3>
-            <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px; margin:0 0 10px 0;">
-                <li>Accuracy: <strong style="color:#4F8EF7;">60.5%</strong> (±5 ปี threshold)</li>
-                <li>MAE: <strong style="color:#E05C7A;">7.2 ปี</strong></li>
+            <h3 style="color:#4F8EF7; margin-top:0;">🔁 Transfer Learning</h3>
+            <p style="color:#A8B2C6; font-size:0.9rem; line-height:1.7; margin:0 0 10px 0;">
+                แทนที่จะ train โมเดลจากศูนย์ เราใช้ weights จาก <strong>ImageNet</strong>
+                (1.2M ภาพ, 1000 classes) ที่โมเดลเรียนรู้ feature ทั่วไปมาแล้ว
+            </p>
+            <ul style="color:#A8B2C6; font-size:0.85rem; line-height:1.8; padding-left:18px; margin:0 0 10px 0;">
+                <li><strong>Phase 1 — Feature Extraction:</strong> Freeze base layers ทั้งหมด train เฉพาะ head</li>
+                <li><strong>Phase 2 — Fine-tuning:</strong> Unfreeze layer บน 30 layers ของ base train ด้วย lr ต่ำ (1e-5)</li>
+                <li><strong>ข้อดี:</strong> ลดเวลา train จาก ~10 ชั่วโมง เหลือ ~1 ชั่วโมง, ต้องการข้อมูลน้อยกว่า</li>
             </ul>
-            <div style="background:rgba(224,92,122,0.08); border:1px solid rgba(224,92,122,0.2); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#F0A0B4;">
-                ⚠️ ความหลากหลายของแสงและมุมกล้องใน dataset มีผลต่อ accuracy
+            <div style="background:rgba(79,142,247,0.07); border:1px solid rgba(79,142,247,0.2); border-radius:8px; padding:10px 14px; font-size:0.82rem; color:#A8C4F7;">
+                💡 Low-level features (edge, texture) ใช้ร่วมกับ ImageNet ได้ — High-level features (ใบหน้า) fine-tune เพิ่ม
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+        <div class="info-panel" style="border-left:3px solid rgba(79,142,247,0.35);">
+            <h3 style="color:#4F8EF7; margin-top:0;">📈 Test Results & Analysis</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                <div style="background:rgba(79,142,247,0.08); border:1px solid rgba(79,142,247,0.2); border-radius:8px; padding:10px; text-align:center;">
+                    <div style="color:#4F8EF7; font-weight:700; font-size:1.1rem;">60.5%</div>
+                    <div style="color:#7A84A6; font-size:0.75rem;">Accuracy (±5 ปี)</div>
+                </div>
+                <div style="background:rgba(224,92,122,0.08); border:1px solid rgba(224,92,122,0.2); border-radius:8px; padding:10px; text-align:center;">
+                    <div style="color:#E05C7A; font-weight:700; font-size:1.1rem;">7.2 ปี</div>
+                    <div style="color:#7A84A6; font-size:0.75rem;">Mean Abs. Error</div>
+                </div>
+            </div>
+            <p style="color:#A8B2C6; font-size:0.85rem; margin:0 0 8px 0; line-height:1.7;">
+                โมเดลทำนายได้แม่นยำในช่วงอายุ <strong>25–45 ปี</strong> ที่มีข้อมูลมากที่สุด
+                แต่คลาดเคลื่อนสูงกว่าในช่วงอายุขอบ (10–15 ปี และ 55–60 ปี)
+            </p>
+            <div style="background:rgba(224,92,122,0.07); border:1px solid rgba(224,92,122,0.2); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#F0A0B4;">
+                ⚠️ ปัจจัยที่กระทบ: แสง, มุมกล้อง, การแต่งหน้า และคุณภาพภาพใน dataset
             </div>
         </div>
         """, unsafe_allow_html=True)
