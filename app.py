@@ -9,180 +9,306 @@ import os
 # ==========================================
 # 1. SETTINGS & CONFIG
 # ==========================================
-st.set_page_config(page_title="Project IS 2568 - AI Analysis", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(
+    page_title="IS 2568 — AI Analysis",
+    page_icon="🌌",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# Custom CSS for Moonlit Asteroid Theme
 st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    /* Moonlit Asteroid Theme - Dark space colors */
+    /* ─── Base ─── */
     :root {
-        --primary-color: #6B8CAE;
-        --secondary-color: #4A5F7F;
-        --success-color: #7FCDCD;
-        --danger-color: #D4637C;
-        --warning-color: #C9A55C;
-        --bg-dark: #1A1D2E;
-        --bg-darker: #0F1116;
-        --text-light: #E8EAF6;
-        --accent-blue: #7B9CC9;
-        --accent-purple: #8E7CC3;
-        --accent-silver: #A8B2C6;
+        --ink:       #0B0D17;
+        --surface:   #111320;
+        --panel:     #161929;
+        --border:    rgba(255,255,255,0.07);
+        --blue:      #4F8EF7;
+        --teal:      #38C9B0;
+        --rose:      #E05C7A;
+        --amber:     #E8A840;
+        --text:      #D6DCF0;
+        --muted:     #7A84A6;
+        --glow-blue: rgba(79,142,247,0.25);
+        --glow-teal: rgba(56,201,176,0.25);
+        --glow-rose: rgba(224,92,122,0.25);
     }
-    
-    /* Main background */
-    .stApp {
-        background: linear-gradient(135deg, #0F1116 0%, #1A1D2E 50%, #16213E 100%);
-        color: #E8EAF6;
+
+    html, body, [data-testid="stAppViewContainer"], .stApp {
+        background: var(--ink) !important;
+        font-family: 'Outfit', sans-serif;
+        color: var(--text);
     }
-    
-    /* Header styling */
-    h1 {
-        color: #B8C5D6;
-        font-weight: 700;
-        padding-bottom: 10px;
-        border-bottom: 3px solid #6B8CAE;
-        margin-bottom: 20px;
-        text-shadow: 0 0 20px rgba(107, 140, 174, 0.3);
+
+    /* Subtle star-field noise overlay */
+    .stApp::before {
+        content: '';
+        position: fixed; inset: 0;
+        background-image: radial-gradient(circle at 20% 30%, rgba(79,142,247,0.06) 0%, transparent 60%),
+                          radial-gradient(circle at 80% 70%, rgba(56,201,176,0.05) 0%, transparent 60%);
+        pointer-events: none; z-index: 0;
     }
-    
-    h2, h3 {
-        color: #A8B2C6;
-        font-weight: 600;
-    }
-    
-    h4 {
-        color: #98A5B8;
-    }
-    
-    /* Paragraphs and text */
-    p, li {
-        color: #D0D8E6;
-    }
-    
-    /* Buttons */
-    .stButton > button {
-        background: linear-gradient(135deg, #4A5F7F 0%, #2E3F5E 100%);
-        color: #E8EAF6;
-        border: 1px solid #6B8CAE;
-        padding: 12px 30px;
-        border-radius: 25px;
-        font-weight: 600;
-        font-size: 16px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 20px rgba(107, 140, 174, 0.2);
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 30px rgba(123, 156, 201, 0.4);
-        background: linear-gradient(135deg, #5A6F8F 0%, #3E4F6E 100%);
-        border-color: #7B9CC9;
-    }
-    
-    /* Sidebar styling */
+
+    /* ─── Sidebar ─── */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0F1116 0%, #1A1D2E 100%);
-        border-right: 1px solid #2A3F5F;
+        background: var(--surface) !important;
+        border-right: 1px solid var(--border) !important;
     }
-    
-    [data-testid="stSidebar"] * {
-        color: #D0D8E6 !important;
-    }
-    
-    /* Info/Success/Warning boxes */
-    .stAlert {
-        border-radius: 10px;
-        border-left: 5px solid;
-        padding: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        background: rgba(26, 29, 46, 0.6) !important;
-        backdrop-filter: blur(10px);
-    }
-    
-    /* File uploader */
-    [data-testid="stFileUploader"] {
-        border: 2px dashed #6B8CAE;
-        border-radius: 10px;
-        padding: 20px;
-        background: rgba(26, 29, 46, 0.4);
-        backdrop-filter: blur(5px);
-    }
-    
-    [data-testid="stFileUploader"] label {
-        color: #A8B2C6 !important;
-    }
-    
-    /* Select boxes */
-    .stSelectbox > div > div {
-        border-radius: 8px;
-        border: 2px solid #4A5F7F;
-        background: rgba(26, 29, 46, 0.6);
-        color: #E8EAF6;
-    }
-    
-    .stSelectbox label {
-        color: #A8B2C6 !important;
-    }
-    
-    /* Divider */
-    hr {
-        border: none;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, #6B8CAE, transparent);
-        margin: 30px 0;
-        box-shadow: 0 0 10px rgba(107, 140, 174, 0.3);
-    }
-    
-    /* Radio buttons in sidebar */
+    [data-testid="stSidebar"] * { color: var(--text) !important; }
+
+    /* Sidebar nav label */
     .stRadio > label {
-        color: #D0D8E6 !important;
-        font-weight: 600;
+        font-family: 'Space Mono', monospace !important;
+        font-size: 0.75rem !important;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted) !important;
     }
-    
-    .stRadio > div {
-        background: rgba(74, 95, 127, 0.2);
-        padding: 10px;
-        border-radius: 10px;
-        border: 1px solid rgba(107, 140, 174, 0.3);
+    .stRadio div[role="radiogroup"] { gap: 4px; }
+    .stRadio div[role="radiogroup"] label {
+        background: transparent !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 8px !important;
+        padding: 10px 14px !important;
+        transition: all 0.2s !important;
+        font-size: 0.9rem !important;
     }
-    
-    /* Input fields */
+    .stRadio div[role="radiogroup"] label:hover {
+        border-color: var(--blue) !important;
+        background: rgba(79,142,247,0.08) !important;
+    }
+
+    /* ─── Typography ─── */
+    h1 { font-family: 'Outfit', sans-serif !important; font-weight: 700 !important;
+         font-size: 2rem !important; border: none !important; margin-bottom: 4px !important; }
+    h2 { font-family: 'Outfit', sans-serif !important; font-weight: 600 !important; border: none !important; }
+    h3 { font-family: 'Outfit', sans-serif !important; font-weight: 500 !important; }
+
+    /* ─── Metric Cards ─── */
+    .metric-card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px 20px;
+        text-align: center;
+        transition: transform 0.2s, box-shadow 0.2s;
+        position: relative; overflow: hidden;
+    }
+    .metric-card:hover { transform: translateY(-3px); }
+    .metric-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        border-radius: 16px 16px 0 0;
+    }
+    .metric-card.blue::before  { background: linear-gradient(90deg, var(--blue), transparent); box-shadow: 0 0 20px var(--glow-blue); }
+    .metric-card.teal::before  { background: linear-gradient(90deg, var(--teal), transparent); box-shadow: 0 0 20px var(--glow-teal); }
+    .metric-card.rose::before  { background: linear-gradient(90deg, var(--rose), transparent); box-shadow: 0 0 20px var(--glow-rose); }
+    .metric-card .label  { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-family: 'Space Mono', monospace; }
+    .metric-card .value  { font-size: 2.8rem; font-weight: 700; line-height: 1.1; margin: 10px 0 4px; }
+    .metric-card .sub    { font-size: 0.8rem; color: var(--muted); }
+    .metric-card.blue  .value { color: var(--blue); }
+    .metric-card.teal  .value { color: var(--teal); }
+    .metric-card.rose  .value { color: var(--rose); }
+
+    /* ─── Content panels ─── */
+    .info-panel {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 16px;
+    }
+    .info-panel h3 { margin-top: 0; font-size: 1rem; letter-spacing: 0.02em; }
+
+    /* ─── Tag chips ─── */
+    .tag {
+        display: inline-block;
+        background: rgba(79,142,247,0.12);
+        color: var(--blue);
+        border: 1px solid rgba(79,142,247,0.3);
+        border-radius: 20px;
+        padding: 3px 12px;
+        font-size: 0.75rem;
+        font-family: 'Space Mono', monospace;
+        margin: 2px;
+    }
+    .tag.teal { background: rgba(56,201,176,0.12); color: var(--teal); border-color: rgba(56,201,176,0.3); }
+
+    /* ─── Divider ─── */
+    hr { border: none !important; height: 1px !important;
+         background: linear-gradient(90deg, transparent, var(--border), transparent) !important;
+         margin: 28px 0 !important; }
+
+    /* ─── Buttons ─── */
+    .stButton > button {
+        background: linear-gradient(135deg, #2A3B6E, #1E2A52) !important;
+        color: var(--text) !important;
+        border: 1px solid rgba(79,142,247,0.4) !important;
+        border-radius: 10px !important;
+        padding: 12px 28px !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        transition: all 0.2s !important;
+        letter-spacing: 0.03em !important;
+    }
+    .stButton > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 28px var(--glow-blue) !important;
+        border-color: var(--blue) !important;
+        background: linear-gradient(135deg, #2E4280, #233068) !important;
+    }
+
+    /* ─── File uploader ─── */
+    [data-testid="stFileUploader"] {
+        border: 2px dashed rgba(79,142,247,0.35) !important;
+        border-radius: 12px !important;
+        background: rgba(79,142,247,0.04) !important;
+        transition: border-color 0.2s;
+    }
+    [data-testid="stFileUploader"]:hover {
+        border-color: var(--blue) !important;
+    }
+
+    /* ─── Selectbox ─── */
+    .stSelectbox > div > div {
+        background: var(--panel) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 10px !important;
+        color: var(--text) !important;
+    }
+    .stSelectbox > div > div:focus-within {
+        border-color: var(--blue) !important;
+        box-shadow: 0 0 0 3px var(--glow-blue) !important;
+    }
+    .stSelectbox label { color: var(--muted) !important; font-size: 0.8rem !important;
+                         text-transform: uppercase; letter-spacing: 0.08em; font-family: 'Space Mono', monospace; }
+
+    /* ─── Alerts ─── */
+    .stAlert { background: var(--panel) !important; border-radius: 10px !important; }
+
+    /* ─── Spinner ─── */
+    .stSpinner > div { border-top-color: var(--blue) !important; }
+
+    /* ─── Image container ─── */
+    .img-wrap {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 16px;
+        overflow: hidden;
+    }
+
+    /* ─── Result cards ─── */
+    .result-safe {
+        background: linear-gradient(135deg, rgba(56,201,176,0.12), rgba(56,201,176,0.04));
+        border: 1px solid rgba(56,201,176,0.35);
+        border-radius: 16px; padding: 36px; text-align: center;
+        box-shadow: 0 8px 32px var(--glow-teal); margin-top: 24px;
+    }
+    .result-danger {
+        background: linear-gradient(135deg, rgba(224,92,122,0.12), rgba(224,92,122,0.04));
+        border: 1px solid rgba(224,92,122,0.35);
+        border-radius: 16px; padding: 36px; text-align: center;
+        box-shadow: 0 8px 32px var(--glow-rose); margin-top: 24px;
+    }
+    .result-safe   .icon { font-size: 3.5rem; }
+    .result-danger .icon { font-size: 3.5rem; }
+    .result-safe   .title { color: var(--teal); font-size: 1.6rem; font-weight: 700; margin: 12px 0 4px; }
+    .result-danger .title { color: var(--rose); font-size: 1.6rem; font-weight: 700; margin: 12px 0 4px; }
+    .result-safe   .sub, .result-danger .sub { color: var(--muted); font-size: 0.9rem; }
+
+    /* ─── Age result ─── */
+    .age-result {
+        background: linear-gradient(135deg, rgba(79,142,247,0.12), rgba(79,142,247,0.04));
+        border: 1px solid rgba(79,142,247,0.35);
+        border-radius: 16px; padding: 36px; text-align: center;
+        box-shadow: 0 8px 32px var(--glow-blue); margin-top: 20px;
+    }
+    .age-result .num { font-size: 5rem; font-weight: 700; color: var(--blue); line-height: 1; }
+    .age-result .label { color: var(--muted); font-size: 0.95rem; margin-top: 8px; }
+
+    /* ─── Section header ─── */
+    .section-header {
+        display: flex; align-items: center; gap: 10px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 12px; margin-bottom: 20px;
+    }
+    .section-header .icon-box {
+        width: 36px; height: 36px;
+        background: rgba(79,142,247,0.12);
+        border: 1px solid rgba(79,142,247,0.2);
+        border-radius: 8px; display: flex;
+        align-items: center; justify-content: center;
+        font-size: 1.1rem;
+    }
+    .section-header.teal .icon-box { background: rgba(56,201,176,0.12); border-color: rgba(56,201,176,0.2); }
+
+    /* input field */
     input, textarea {
-        background: rgba(26, 29, 46, 0.6) !important;
-        color: #E8EAF6 !important;
-        border: 1px solid #4A5F7F !important;
+        background: var(--panel) !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 8px !important;
     }
-    
-    /* Spinner */
-    .stSpinner > div {
-        border-top-color: #7B9CC9 !important;
+
+    /* ─── Sidebar logo ─── */
+    .sidebar-badge {
+        background: linear-gradient(135deg, rgba(79,142,247,0.15), rgba(56,201,176,0.1));
+        border: 1px solid rgba(79,142,247,0.25);
+        border-radius: 12px; padding: 16px; text-align: center;
+        margin-top: 8px;
     }
+
+    /* input field search in selectbox - make dropdown items readable */
+    [data-baseweb="select"] input { border: none !important; background: transparent !important; }
+    [data-baseweb="popover"] * { background: #1A1E30 !important; color: var(--text) !important; }
+    [data-baseweb="menu"] li:hover { background: rgba(79,142,247,0.12) !important; }
 </style>
 """, unsafe_allow_html=True)
 
+# ─── Data ───────────────────────────────────────────────────────────────
 MUSHROOM_MAP = {
-    'odor': {'a': 'Almond (อัลมอนด์)', 'l': 'Anise (โป๊ยกั๊ก)', 'p': 'Pungent (กลิ่นฉุน)', 'n': 'None (ไม่มีกลิ่น)', 'f': 'Foul (กลิ่นเหม็น)', 'm': 'Musty (กลิ่นอับ)', 's': 'Spicy (กลิ่นเครื่องเทศ)', 'y': 'Fishy (กลิ่นคาว)', 'c': 'Creosote (กลิ่นน้ำมันดิน)'},
-    'gill-color': {'k': 'Black (ดำ)', 'n': 'Brown (น้ำตาล)', 'b': 'Buff (น้ำตาลอ่อน)', 'h': 'Chocolate (ช็อกโกแลต)', 'g': 'Gray (เทา)', 'r': 'Green (เขียว)', 'o': 'Orange (ส้ม)', 'p': 'Pink (ชมพู)', 'u': 'Purple (ม่วง)', 'e': 'Red (แดง)', 'w': 'White (ขาว)', 'y': 'Yellow (เหลือง)'},
-    'spore-print-color': {'k': 'Black (ดำ)', 'n': 'Brown (น้ำตาล)', 'b': 'Buff (น้ำตาลอ่อน)', 'h': 'Chocolate (ช็อกโกแลต)', 'r': 'Green (เขียว)', 'o': 'Orange (ส้ม)', 'u': 'Purple (ม่วง)', 'w': 'White (ขาว)', 'y': 'Yellow (เหลือง)'},
-    'population': {'a': 'Abundant (หนาแน่นมาก)', 'c': 'Clustered (รวมกลุ่ม)', 'n': 'Numerous (จำนวนมาก)', 's': 'Scattered (กระจาย)', 'v': 'Several (ปานกลาง)', 'y': 'Solitary (ขึ้นโดดเดี่ยว)'}
+    'odor': {
+        'a': 'Almond — อัลมอนด์', 'l': 'Anise — โป๊ยกั๊ก', 'p': 'Pungent — กลิ่นฉุน',
+        'n': 'None — ไม่มีกลิ่น', 'f': 'Foul — กลิ่นเหม็น', 'm': 'Musty — กลิ่นอับ',
+        's': 'Spicy — กลิ่นเครื่องเทศ', 'y': 'Fishy — กลิ่นคาว', 'c': 'Creosote — กลิ่นน้ำมันดิน'
+    },
+    'gill-color': {
+        'k': 'Black — ดำ', 'n': 'Brown — น้ำตาล', 'b': 'Buff — น้ำตาลอ่อน',
+        'h': 'Chocolate — ช็อกโกแลต', 'g': 'Gray — เทา', 'r': 'Green — เขียว',
+        'o': 'Orange — ส้ม', 'p': 'Pink — ชมพู', 'u': 'Purple — ม่วง',
+        'e': 'Red — แดง', 'w': 'White — ขาว', 'y': 'Yellow — เหลือง'
+    },
+    'spore-print-color': {
+        'k': 'Black — ดำ', 'n': 'Brown — น้ำตาล', 'b': 'Buff — น้ำตาลอ่อน',
+        'h': 'Chocolate — ช็อกโกแลต', 'r': 'Green — เขียว', 'o': 'Orange — ส้ม',
+        'u': 'Purple — ม่วง', 'w': 'White — ขาว', 'y': 'Yellow — เหลือง'
+    },
+    'population': {
+        'a': 'Abundant — หนาแน่นมาก', 'c': 'Clustered — รวมกลุ่ม',
+        'n': 'Numerous — จำนวนมาก', 's': 'Scattered — กระจาย',
+        'v': 'Several — ปานกลาง', 'y': 'Solitary — ขึ้นโดดเดี่ยว'
+    }
 }
 
+# ─── Load models ─────────────────────────────────────────────────────────
 @st.cache_resource
 def load_all_models():
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    age_path = os.path.join(base_dir, "models", "age_model_best.h5")
-    mush_path = os.path.join(base_dir, "models", "mushroom_model.pkl")
-    mush_enc_path = os.path.join(base_dir, "models", "mushroom_encoders.pkl")
-    mush_target_path = os.path.join(base_dir, "models", "mushroom_target_encoder.pkl")
-
-    if not all(os.path.exists(p) for p in [age_path, mush_path, mush_enc_path, mush_target_path]):
+    age_path       = os.path.join(base_dir, "models", "age_model_best.h5")
+    mush_path      = os.path.join(base_dir, "models", "mushroom_model.pkl")
+    mush_enc_path  = os.path.join(base_dir, "models", "mushroom_encoders.pkl")
+    mush_tgt_path  = os.path.join(base_dir, "models", "mushroom_target_encoder.pkl")
+    paths = [age_path, mush_path, mush_enc_path, mush_tgt_path]
+    if not all(os.path.exists(p) for p in paths):
         return None
-
-    nn_model = tf.keras.models.load_model(age_path, compile=False)
-    ml_model = joblib.load(mush_path)
-    ml_encoders = joblib.load(mush_enc_path)
-    ml_target = joblib.load(mush_target_path)
-    return nn_model, ml_model, ml_encoders, ml_target
+    nn  = tf.keras.models.load_model(age_path, compile=False)
+    ml  = joblib.load(mush_path)
+    enc = joblib.load(mush_enc_path)
+    tgt = joblib.load(mush_tgt_path)
+    return nn, ml, enc, tgt
 
 models = load_all_models()
 if models:
@@ -191,376 +317,371 @@ if models:
 else:
     model_ready = False
 
-# ==========================================
-# 2. SIDEBAR NAVIGATION
-# ==========================================
-st.sidebar.markdown("# 📌 IS 2568 Navigation")
-st.sidebar.markdown("---")
-page = st.sidebar.radio("**เลือกหัวข้อ:**", 
-    ["📘 อธิบาย Neural Network", "📸 ทดสอบทายอายุ (NN)", 
-     "📙 อธิบาย Machine Learning", "🍄 ทดสอบจำแนกเห็ด (ML)"],
-    index=0)
-
-st.sidebar.markdown("---")
-st.sidebar.markdown("""
-<div style='text-align: center; padding: 20px; color: white;'>
-    <h4>🎓 Project IS 2568</h4>
-    <p style='font-size: 0.9em; opacity: 0.8;'>AI Analysis & Classification</p>
-</div>
-""", unsafe_allow_html=True)
-
-# ==========================================
-# 📘 หน้าอธิบาย NN
-# ==========================================
-if page == "📘 อธิบาย Neural Network":
-    # Header with icon
+# ─── Sidebar ─────────────────────────────────────────────────────────────
+with st.sidebar:
     st.markdown("""
-    <div style='text-align: center; padding: 20px;'>
-        <h1 style='color: #7B9CC9; border: none; text-shadow: 0 0 30px rgba(123, 156, 201, 0.5);'>🧠 Neural Network Model</h1>
-        <p style='font-size: 1.2em; color: #A8B2C6;'>Age Prediction from Facial Images</p>
+    <div class="sidebar-badge">
+        <div style="font-size:1.6rem; margin-bottom:6px;">🌌</div>
+        <div style="font-family:'Space Mono',monospace; font-size:0.7rem; color:#7A84A6; letter-spacing:0.12em; text-transform:uppercase;">Project</div>
+        <div style="font-weight:700; font-size:1.05rem; color:#D6DCF0; margin:2px 0;">IS 2568</div>
+        <div style="font-size:0.8rem; color:#7A84A6;">AI Analysis Platform</div>
     </div>
     """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # Metrics Dashboard with moonlit theme
-    st.markdown("### 📊 Model Performance Metrics")
-    col_metrics1, col_metrics2, col_metrics3 = st.columns(3)
-    
-    with col_metrics1:
-        st.markdown("""
-        <div style='background: linear-gradient(135deg, #2E3F5E 0%, #1A2332 100%); 
-                    padding: 20px; border-radius: 15px; text-align: center; color: #E8EAF6;
-                    box-shadow: 0 4px 20px rgba(107, 140, 174, 0.4);
-                    border: 1px solid rgba(123, 156, 201, 0.3);'>
-            <h4 style='margin: 0; color: #A8B2C6;'>Model Accuracy</h4>
-            <h1 style='margin: 10px 0; font-size: 3em; color: #7FCDCD; border: none; text-shadow: 0 0 20px rgba(127, 205, 205, 0.5);'>60.5%</h1>
-            <p style='margin: 0; opacity: 0.8; font-size: 0.9em; color: #D0D8E6;'>Test Set Performance</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col_metrics2:
-        st.markdown("""
-        <div style='background: linear-gradient(135deg, #3E2F4E 0%, #2A1F35 100%); 
-                    padding: 20px; border-radius: 15px; text-align: center; color: #E8EAF6;
-                    box-shadow: 0 4px 20px rgba(142, 124, 195, 0.4);
-                    border: 1px solid rgba(142, 124, 195, 0.3);'>
-            <h4 style='margin: 0; color: #A8B2C6;'>Mean Absolute Error</h4>
-            <h1 style='margin: 10px 0; font-size: 3em; color: #D4637C; border: none; text-shadow: 0 0 20px rgba(212, 99, 124, 0.5);'>7.2</h1>
-            <p style='margin: 0; opacity: 0.8; font-size: 0.9em; color: #D0D8E6;'>Years (Average)</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col_metrics3:
-        st.markdown("""
-        <div style='background: linear-gradient(135deg, #2A3F5F 0%, #1A2A3E 100%); 
-                    padding: 20px; border-radius: 15px; text-align: center; color: #E8EAF6;
-                    box-shadow: 0 4px 20px rgba(107, 140, 174, 0.4);
-                    border: 1px solid rgba(107, 140, 174, 0.3);'>
-            <h4 style='margin: 0; color: #A8B2C6;'>Architecture</h4>
-            <h1 style='margin: 10px 0; font-size: 2.5em; color: #7B9CC9; border: none; text-shadow: 0 0 20px rgba(123, 156, 201, 0.5);'>MobileNetV2</h1>
-            <p style='margin: 0; opacity: 0.8; font-size: 0.9em; color: #D0D8E6;'>Transfer Learning</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
+
     st.markdown("<br>", unsafe_allow_html=True)
-    
-    # Main content with moonlit theme cards
-    col1, col2 = st.columns(2)
-    
+    st.markdown('<p style="font-family:\'Space Mono\',monospace; font-size:0.7rem; color:#7A84A6; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:8px;">NAVIGATE</p>', unsafe_allow_html=True)
+
+    page = st.radio(
+        "nav",
+        ["📘  Neural Network — ทฤษฎี",
+         "📸  ทดสอบทายอายุ  (NN)",
+         "📙  Machine Learning — ทฤษฎี",
+         "🍄  ทดสอบจำแนกเห็ด  (ML)"],
+        label_visibility="collapsed"
+    )
+
+# ─── Helpers ─────────────────────────────────────────────────────────────
+def section(icon, title, accent="blue"):
+    st.markdown(f"""
+    <div class="section-header {accent}">
+        <div class="icon-box">{icon}</div>
+        <span style="font-weight:600; font-size:1rem;">{title}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+def metric_card(cls, label, value, sub):
+    return f"""
+    <div class="metric-card {cls}">
+        <div class="label">{label}</div>
+        <div class="value">{value}</div>
+        <div class="sub">{sub}</div>
+    </div>
+    """
+
+def info_panel(icon_title, content_html, accent_color="#4F8EF7"):
+    st.markdown(f"""
+    <div class="info-panel" style="border-left: 3px solid {accent_color}20;">
+        <h3 style="color:{accent_color};">{icon_title}</h3>
+        {content_html}
+    </div>
+    """, unsafe_allow_html=True)
+
+# ══════════════════════════════════════════════════════════════════════════
+# PAGE: Neural Network Theory
+# ══════════════════════════════════════════════════════════════════════════
+if page == "📘  Neural Network — ทฤษฎี":
+
+    st.markdown("""
+    <div style="margin-bottom:4px;">
+        <span style="font-family:'Space Mono',monospace; font-size:0.7rem; color:#4F8EF7; letter-spacing:0.15em; text-transform:uppercase;">Neural Network</span>
+    </div>
+    <h1 style="color:#D6DCF0; margin-bottom:4px;">Age Prediction Model</h1>
+    <p style="color:#7A84A6; font-size:1rem; margin-bottom:0;">MobileNetV2 · Transfer Learning · Regression</p>
+    """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Metrics
+    c1, c2, c3 = st.columns(3)
+    c1.markdown(metric_card("blue", "Accuracy", "60.5%", "Test Set"), unsafe_allow_html=True)
+    c2.markdown(metric_card("rose", "Mean Abs. Error", "7.2 yrs", "Average deviation"), unsafe_allow_html=True)
+    c3.markdown(metric_card("teal", "Architecture", "MobileNetV2", "Transfer Learning"), unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2, gap="large")
+
     with col1:
-        st.markdown("""
-        <div style='background: rgba(26, 29, 46, 0.7); padding: 25px; border-radius: 15px; 
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.4); margin-bottom: 20px;
-                    border: 1px solid rgba(107, 140, 174, 0.2); backdrop-filter: blur(10px);'>
-            <h3 style='color: #7B9CC9; margin-top: 0; text-shadow: 0 0 10px rgba(123, 156, 201, 0.3);'>📊 1. ข้อมูลที่ใช้พัฒนา (Dataset)</h3>
-        """, unsafe_allow_html=True)
-        st.write("- **ที่มา:** [UTKFace Dataset](https://www.kaggle.com/datasets/jangedoo/utkface-new/data)")
-        st.write("- **ลักษณะข้อมูล:** รูปภาพใบหน้ามนุษย์แบบ Unstructured Data จำนวนกว่า 20,000 ภาพ")
-        st.write("- **ฟีเจอร์หลัก:** พิกเซลของรูปภาพที่ระบุอายุ (Age) 0 ถึง 116 ปี")
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div style='background: rgba(26, 29, 46, 0.7); padding: 25px; border-radius: 15px; 
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-                    border: 1px solid rgba(107, 140, 174, 0.2); backdrop-filter: blur(10px);'>
-            <h3 style='color: #7B9CC9; margin-top: 0; text-shadow: 0 0 10px rgba(123, 156, 201, 0.3);'>⚙️ 2. ขั้นตอนการเตรียมข้อมูล</h3>
-        """, unsafe_allow_html=True)
-        st.write("- **Data Imbalance:** ข้อมูลช่วงอายุเด็กและคนชราน้อยกว่าวัยทำงาน จึงกรองเลือกช่วง 10-60 ปี")
-        st.write("- **Data Augmentation:** เพิ่มความหลากหลายด้วย Random Rotation, Flip และ Zoom")
-        st.info("💡 หมายเหตุ: การกรองข้อมูลช่วยให้ MAE ลดลงจากเดิมได้ถึง 15%")
-        st.markdown("</div>", unsafe_allow_html=True)
+        info_panel("📊 Dataset", """
+        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
+            <li><strong>ที่มา:</strong> UTKFace Dataset (Kaggle)</li>
+            <li><strong>ขนาด:</strong> ภาพใบหน้า 20,000+ รูป (Unstructured)</li>
+            <li><strong>Target:</strong> อายุ 0–116 ปี ระบุในชื่อไฟล์</li>
+            <li><strong>Filter:</strong> คัดเฉพาะช่วง <span class="tag">10–60 ปี</span> เพื่อลด imbalance</li>
+        </ul>
+        """)
+
+        info_panel("⚙️ Data Preprocessing", """
+        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
+            <li><strong>Imbalance handling:</strong> กรองช่วงอายุที่มีข้อมูลน้อย</li>
+            <li><strong>Augmentation:</strong> Random Rotation, Flip, Zoom</li>
+            <li><strong>Normalization:</strong> pixel / 255.0 → [0, 1]</li>
+            <li><strong>Input size:</strong> 128 × 128 × 3</li>
+        </ul>
+        <div style="background:rgba(79,142,247,0.08); border:1px solid rgba(79,142,247,0.2); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#A8C4F7; margin-top:8px;">
+            💡 การกรองข้อมูลช่วยลด MAE ได้ถึง ~15%
+        </div>
+        """)
 
     with col2:
-        st.markdown("""
-        <div style='background: rgba(26, 29, 46, 0.7); padding: 25px; border-radius: 15px; 
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.4); margin-bottom: 20px;
-                    border: 1px solid rgba(107, 140, 174, 0.2); backdrop-filter: blur(10px);'>
-            <h3 style='color: #7B9CC9; margin-top: 0; text-shadow: 0 0 10px rgba(123, 156, 201, 0.3);'>🔬 3. ทฤษฎีและโครงสร้างโมเดล</h3>
-        """, unsafe_allow_html=True)
-        st.write("- **สถาปัตยกรรม:** MobileNetV2 ซึ่งเป็น Lightweight CNN เหมาะสำหรับการรันบนเว็บ")
-        st.write("- **Transfer Learning:** ใช้ Weights จาก ImageNet เพื่อช่วยในการสกัดฟีเจอร์ใบหน้า (Feature Extraction)")
-        st.write("- **Regression Head:** ใช้ Dense 256 (Swish) และ Output 1 unit เพื่อทำนายค่าต่อเนื่อง")
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div style='background: rgba(26, 29, 46, 0.7); padding: 25px; border-radius: 15px; 
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-                    border: 1px solid rgba(107, 140, 174, 0.2); backdrop-filter: blur(10px);'>
-            <h3 style='color: #7B9CC9; margin-top: 0; text-shadow: 0 0 10px rgba(123, 156, 201, 0.3);'>📈 4. สรุปผลการทดสอบ</h3>
-        """, unsafe_allow_html=True)
-        st.warning("⚠️ ผลลัพธ์ Accuracy อยู่ที่ 60.5% เนื่องจากปัจจัยเรื่องแสงและมุมกล้องของภาพใน Dataset ที่มีความหลากหลายสูง")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-
-elif page == "📸 ทดสอบทายอายุ (NN)":
-    st.markdown("""
-    <div style='text-align: center; padding: 20px;'>
-        <h1 style='color: #7B9CC9; border: none; text-shadow: 0 0 30px rgba(123, 156, 201, 0.5);'>📸 Age Prediction System</h1>
-        <p style='font-size: 1.2em; color: #A8B2C6;'>Upload a facial image to predict age</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    if not model_ready:
-        st.error("⚠️ โมเดลยังไม่พร้อมใช้งาน กรุณาตรวจสอบไฟล์โมเดล")
-    else:
-        # Upload section with moonlit theme
-        st.markdown("""
-        <div style='background: linear-gradient(135deg, #2E3F5E 0%, #1A2332 100%); 
-                    padding: 30px; border-radius: 15px; text-align: center; color: #E8EAF6; margin-bottom: 30px;
-                    box-shadow: 0 4px 25px rgba(107, 140, 174, 0.3);
-                    border: 1px solid rgba(123, 156, 201, 0.3);'>
-            <h3 style='margin: 0; color: #A8B2C6; text-shadow: 0 0 10px rgba(168, 178, 198, 0.3);'>🖼️ อัปโหลดรูปภาพใบหน้า</h3>
-            <p style='margin: 10px 0 0 0; opacity: 0.8; color: #D0D8E6;'>รองรับไฟล์: JPG, JPEG, PNG</p>
+        info_panel("🔬 Model Architecture", """
+        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
+            <li><strong>Base:</strong> MobileNetV2 (pretrained ImageNet)</li>
+            <li><strong>Strategy:</strong> Feature Extraction → Fine-tuning</li>
+            <li><strong>Head:</strong> GlobalAvgPool → Dense 256 (Swish) → Output 1</li>
+            <li><strong>Loss:</strong> MAE &nbsp;·&nbsp; Optimizer: Adam</li>
+        </ul>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">
+            <span class="tag">Lightweight CNN</span>
+            <span class="tag">Transfer Learning</span>
+            <span class="tag">Regression Task</span>
         </div>
-        """, unsafe_allow_html=True)
-        
-        uploaded_file = st.file_uploader("เลือกไฟล์รูปภาพ...", type=["jpg", "jpeg", "png"], label_visibility="collapsed")
-        
-        if uploaded_file:
-            c1, c2, c3 = st.columns([1, 2, 1])
-            with c2:
-                st.markdown("""
-                <div style='background: rgba(26, 29, 46, 0.8); padding: 20px; border-radius: 15px; 
-                            box-shadow: 0 4px 25px rgba(0,0,0,0.5);
-                            border: 1px solid rgba(123, 156, 201, 0.3); backdrop-filter: blur(10px);'>
-                """, unsafe_allow_html=True)
-                
+        """)
+
+        info_panel("📈 Test Results", """
+        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
+            <li>Accuracy: <strong style="color:#4F8EF7;">60.5%</strong> (±5 ปี threshold)</li>
+            <li>MAE: <strong style="color:#E05C7A;">7.2 ปี</strong></li>
+        </ul>
+        <div style="background:rgba(224,92,122,0.08); border:1px solid rgba(224,92,122,0.2); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#F0A0B4; margin-top:8px;">
+            ⚠️ ความหลากหลายของแสงและมุมกล้องใน dataset มีผลต่อ accuracy
+        </div>
+        """)
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# PAGE: Age Prediction Demo
+# ══════════════════════════════════════════════════════════════════════════
+elif page == "📸  ทดสอบทายอายุ  (NN)":
+
+    st.markdown("""
+    <div style="margin-bottom:4px;">
+        <span style="font-family:'Space Mono',monospace; font-size:0.7rem; color:#4F8EF7; letter-spacing:0.15em; text-transform:uppercase;">Demo — Neural Network</span>
+    </div>
+    <h1 style="color:#D6DCF0; margin-bottom:4px;">Age Prediction</h1>
+    <p style="color:#7A84A6; font-size:1rem;">อัปโหลดรูปใบหน้าเพื่อให้ AI ทำนายอายุ</p>
+    """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    if not model_ready:
+        st.error("⚠️ โมเดลยังไม่พร้อม — กรุณาตรวจสอบไฟล์ใน /models")
+    else:
+        col_upload, col_result = st.columns([1, 1], gap="large")
+
+        with col_upload:
+            section("🖼️", "อัปโหลดรูปภาพ")
+            uploaded_file = st.file_uploader(
+                "รองรับ JPG · JPEG · PNG",
+                type=["jpg", "jpeg", "png"],
+                label_visibility="visible"
+            )
+            if uploaded_file:
                 img = Image.open(uploaded_file).convert('RGB')
-                st.image(img, use_column_width=True)
-                
-                st.markdown("</div>", unsafe_allow_html=True)
-                st.markdown("<br>", unsafe_allow_html=True)
-                
-                if st.button("🚀 เริ่มประมวลผล", use_container_width=True):
-                    with st.spinner('กำลังวิเคราะห์...'):
+                st.markdown('<div class="img-wrap">', unsafe_allow_html=True)
+                st.image(img, use_column_width=True, caption="ภาพที่อัปโหลด")
+                st.markdown('</div>', unsafe_allow_html=True)
+
+        with col_result:
+            section("🎯", "ผลการวิเคราะห์")
+            if not uploaded_file:
+                st.markdown("""
+                <div style="background:var(--panel); border:1px dashed rgba(255,255,255,0.1); border-radius:14px;
+                             padding:60px 20px; text-align:center; color:#7A84A6;">
+                    <div style="font-size:3rem; margin-bottom:12px; opacity:0.4;">🧠</div>
+                    <p style="margin:0; font-size:0.9rem;">รอรับรูปภาพจากด้านซ้าย…</p>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                if st.button("🚀  เริ่มวิเคราะห์อายุ", use_container_width=True):
+                    with st.spinner("กำลังประมวลผล…"):
                         prep = np.array(img.resize((128, 128))) / 255.0
                         pred = age_model.predict(np.expand_dims(prep, axis=0))
                         predicted_age = int(pred[0][0])
-                        
-                        st.markdown(f"""
-                        <div style='background: linear-gradient(135deg, #2A4F4F 0%, #1A3535 100%); 
-                                    padding: 30px; border-radius: 15px; text-align: center; color: #E8EAF6;
-                                    box-shadow: 0 4px 25px rgba(127, 205, 205, 0.4); margin-top: 20px;
-                                    border: 1px solid rgba(127, 205, 205, 0.4);'>
-                            <h2 style='margin: 0; color: #A8B2C6; border: none;'>🎯 ผลการทำนาย</h2>
-                            <h1 style='margin: 20px 0 10px 0; font-size: 4em; color: #7FCDCD; border: none; text-shadow: 0 0 30px rgba(127, 205, 205, 0.6);'>{predicted_age}</h1>
-                            <h3 style='margin: 0; color: #D0D8E6; opacity: 0.9;'>ปี (Years Old)</h3>
-                        </div>
-                        """, unsafe_allow_html=True)
+
+                    st.markdown(f"""
+                    <div class="age-result">
+                        <div style="font-family:'Space Mono',monospace; font-size:0.7rem; color:#7A84A6;
+                                    letter-spacing:0.15em; text-transform:uppercase; margin-bottom:8px;">Predicted Age</div>
+                        <div class="num">{predicted_age}</div>
+                        <div class="label">ปี · Years Old</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    st.info("ℹ️ ความแม่นยำของโมเดลอยู่ที่ ~60% (MAE ±7.2 ปี)")
 
 
-# ==========================================
-# 📙 หน้าอธิบาย ML
-# ==========================================
-elif page == "📙 อธิบาย Machine Learning":
+# ══════════════════════════════════════════════════════════════════════════
+# PAGE: ML Theory
+# ══════════════════════════════════════════════════════════════════════════
+elif page == "📙  Machine Learning — ทฤษฎี":
+
     st.markdown("""
-    <div style='text-align: center; padding: 20px;'>
-        <h1 style='color: #7FCDCD; border: none; text-shadow: 0 0 30px rgba(127, 205, 205, 0.5);'>🤖 Machine Learning Model</h1>
-        <p style='font-size: 1.2em; color: #A8B2C6;'>Mushroom Classification System</p>
+    <div style="margin-bottom:4px;">
+        <span style="font-family:'Space Mono',monospace; font-size:0.7rem; color:#38C9B0; letter-spacing:0.15em; text-transform:uppercase;">Machine Learning</span>
     </div>
+    <h1 style="color:#D6DCF0; margin-bottom:4px;">Mushroom Classification</h1>
+    <p style="color:#7A84A6; font-size:1rem;">Random Forest · 100 Trees · Binary Classification</p>
     """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # 📊 Metrics Dashboard
-    st.markdown("### 📊 Model Performance Metrics")
-    col_metrics1, col_metrics2, col_metrics3 = st.columns(3)
-    
-    with col_metrics1:
-        st.markdown("""
-        <div style='background: linear-gradient(135deg, #2A4F4F 0%, #1A3535 100%); 
-                    padding: 20px; border-radius: 15px; text-align: center; color: #E8EAF6;
-                    box-shadow: 0 4px 20px rgba(127, 205, 205, 0.4);
-                    border: 1px solid rgba(127, 205, 205, 0.3);'>
-            <h4 style='margin: 0; color: #A8B2C6;'>Model Accuracy</h4>
-            <h1 style='margin: 10px 0; font-size: 3em; color: #7FCDCD; border: none; text-shadow: 0 0 20px rgba(127, 205, 205, 0.6);'>100%</h1>
-            <p style='margin: 0; opacity: 0.8; font-size: 0.9em; color: #D0D8E6;'>Perfect Classification</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col_metrics2:
-        st.markdown("""
-        <div style='background: linear-gradient(135deg, #3E2F4E 0%, #2A1F35 100%); 
-                    padding: 20px; border-radius: 15px; text-align: center; color: #E8EAF6;
-                    box-shadow: 0 4px 20px rgba(142, 124, 195, 0.4);
-                    border: 1px solid rgba(142, 124, 195, 0.3);'>
-            <h4 style='margin: 0; color: #A8B2C6;'>F1-Score</h4>
-            <h1 style='margin: 10px 0; font-size: 3em; color: #8E7CC3; border: none; text-shadow: 0 0 20px rgba(142, 124, 195, 0.5);'>1.00</h1>
-            <p style='margin: 0; opacity: 0.8; font-size: 0.9em; color: #D0D8E6;'>Precision & Recall</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col_metrics3:
-        st.markdown("""
-        <div style='background: linear-gradient(135deg, #2A3F5F 0%, #1A2A3E 100%); 
-                    padding: 20px; border-radius: 15px; text-align: center; color: #E8EAF6;
-                    box-shadow: 0 4px 20px rgba(107, 140, 174, 0.4);
-                    border: 1px solid rgba(107, 140, 174, 0.3);'>
-            <h4 style='margin: 0; color: #A8B2C6;'>Algorithm</h4>
-            <h1 style='margin: 10px 0; font-size: 2.5em; color: #7B9CC9; border: none; text-shadow: 0 0 20px rgba(123, 156, 201, 0.5);'>Random Forest</h1>
-            <p style='margin: 0; opacity: 0.8; font-size: 0.9em; color: #D0D8E6;'>Ensemble Method</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("""
-        <div style='background: rgba(26, 29, 46, 0.7); padding: 25px; border-radius: 15px; 
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.4); margin-bottom: 20px;
-                    border: 1px solid rgba(127, 205, 205, 0.2); backdrop-filter: blur(10px);'>
-            <h3 style='color: #7FCDCD; margin-top: 0; text-shadow: 0 0 10px rgba(127, 205, 205, 0.3);'>📊 1. ข้อมูลที่ใช้พัฒนา (Dataset)</h3>
-        """, unsafe_allow_html=True)
-        st.write("- **ที่มา:** [Mushroom Classification](https://www.kaggle.com/datasets/uciml/mushroom-classification)")
-        st.write("- **ลักษณะข้อมูล:** Structured Data (ข้อมูลแบบตาราง) จำนวน 8,124 รายการ")
-        st.write("- **คุณลักษณะ (Features):** 22 รายการ เช่น กลิ่น (Odor), สีสปอร์ (Spore-color)")
-        st.markdown("</div>", unsafe_allow_html=True)
 
-        st.markdown("""
-        <div style='background: rgba(26, 29, 46, 0.7); padding: 25px; border-radius: 15px; 
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-                    border: 1px solid rgba(127, 205, 205, 0.2); backdrop-filter: blur(10px);'>
-            <h3 style='color: #7FCDCD; margin-top: 0; text-shadow: 0 0 10px rgba(127, 205, 205, 0.3);'>⚙️ 2. การเตรียมข้อมูล</h3>
-        """, unsafe_allow_html=True)
-        st.write("- **Encoding:** แปลงข้อมูลหมวดหมู่ (Categorical) เป็นตัวเลขด้วย LabelEncoder")
-        st.write("- **Data Splitting:** แบ่งข้อมูล Test Set 20% เพื่อใช้ประเมินผลความแม่นยำ")
-        st.write("- **Feature Selection:** เลือกใช้ฟีเจอร์หลักที่มีอิทธิพลสูงในการตัดสินใจ")
-        st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("---")
+
+    c1, c2, c3 = st.columns(3)
+    c1.markdown(metric_card("teal", "Accuracy", "100%", "Perfect Classification"), unsafe_allow_html=True)
+    c2.markdown(metric_card("blue", "F1-Score", "1.00", "Precision & Recall"), unsafe_allow_html=True)
+    c3.markdown(metric_card("teal", "Algorithm", "Random Forest", "Ensemble Method"), unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2, gap="large")
+
+    with col1:
+        info_panel("📊 Dataset", """
+        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
+            <li><strong>ที่มา:</strong> UCI Mushroom Classification (Kaggle)</li>
+            <li><strong>ขนาด:</strong> 8,124 รายการ (Structured Data)</li>
+            <li><strong>Features:</strong> 22 คอลัมน์ เช่น odor, spore-color, gill-color</li>
+            <li><strong>Target:</strong> <span class="tag teal">edible</span> vs <span class="tag" style="background:rgba(224,92,122,0.12);color:#E05C7A;border-color:rgba(224,92,122,0.3);">poisonous</span></li>
+        </ul>
+        """, accent_color="#38C9B0")
+
+        info_panel("⚙️ Data Preprocessing", """
+        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
+            <li><strong>Encoding:</strong> LabelEncoder สำหรับ categorical features</li>
+            <li><strong>Split:</strong> Train 80% / Test 20%</li>
+            <li><strong>Feature Selection:</strong> เลือก 4 features ที่มีอิทธิพลสูงสุด</li>
+        </ul>
+        """, accent_color="#38C9B0")
 
     with col2:
-        st.markdown("""
-        <div style='background: rgba(26, 29, 46, 0.7); padding: 25px; border-radius: 15px; 
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.4); margin-bottom: 20px;
-                    border: 1px solid rgba(127, 205, 205, 0.2); backdrop-filter: blur(10px);'>
-            <h3 style='color: #7FCDCD; margin-top: 0; text-shadow: 0 0 10px rgba(127, 205, 205, 0.3);'>🌳 3. อัลกอริทึม Ensemble</h3>
-        """, unsafe_allow_html=True)
-        st.write("- **โมเดล:** ใช้ Random Forest Classifier (100 Decision Trees)")
-        st.write("- **หลักการทำงาน:** ใช้เทคนิค Bagging เพื่อรวมผลลัพธ์จากหลายต้นไม้ ช่วยลดค่า Variance")
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-        st.markdown("""
-        <div style='background: rgba(26, 29, 46, 0.7); padding: 25px; border-radius: 15px; 
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-                    border: 1px solid rgba(127, 205, 205, 0.2); backdrop-filter: blur(10px);'>
-            <h3 style='color: #7FCDCD; margin-top: 0; text-shadow: 0 0 10px rgba(127, 205, 205, 0.3);'>📈 4. วิเคราะห์ผลการทดสอบ</h3>
-        """, unsafe_allow_html=True)
-        st.success("✅ ความแม่นยำ 100% (Perfect Classification)")
-        st.write("- **เหตุผล:** ข้อมูลมีความสัมพันธ์ (Correlation) ระหว่างฟีเจอร์ 'กลิ่น' และ 'สีสปอร์' ที่ชัดเจนมาก ทำให้โมเดลแยกแยะเห็ดพิษและเห็ดกินได้ได้อย่างเด็ดขาด")
-        st.markdown("</div>", unsafe_allow_html=True)
-    
-
-# ==========================================
-# 🍄 หน้าทดสอบ ML
-# ==========================================
-elif page == "🍄 ทดสอบจำแนกเห็ด (ML)":
-    st.markdown("""
-    <div style='text-align: center; padding: 20px;'>
-        <h1 style='color: #7FCDCD; border: none; text-shadow: 0 0 30px rgba(127, 205, 205, 0.5);'>🍄 Mushroom Classification</h1>
-        <p style='font-size: 1.2em; color: #A8B2C6;'>Identify Edible vs Poisonous Mushrooms</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    if not model_ready:
-        st.error("⚠️ โมเดลยังไม่พร้อมใช้งาน กรุณาตรวจสอบไฟล์โมเดล")
-    else:
-        st.markdown("""
-        <div style='background: linear-gradient(135deg, #2E3F5E 0%, #1A2332 100%); 
-                    padding: 25px; border-radius: 15px; text-align: center; color: #E8EAF6; margin-bottom: 30px;
-                    box-shadow: 0 4px 25px rgba(107, 140, 174, 0.3);
-                    border: 1px solid rgba(123, 156, 201, 0.3);'>
-            <h3 style='margin: 0; color: #A8B2C6; text-shadow: 0 0 10px rgba(168, 178, 198, 0.3);'>🔬 กรอกลักษณะของเห็ด</h3>
-            <p style='margin: 10px 0 0 0; opacity: 0.8; color: #D0D8E6;'>เลือกคุณลักษณะต่างๆ เพื่อวิเคราะห์</p>
+        info_panel("🌳 Random Forest Algorithm", """
+        <ul style="color:#A8B2C6; font-size:0.9rem; line-height:1.9; padding-left:18px;">
+            <li><strong>n_estimators:</strong> 100 Decision Trees</li>
+            <li><strong>Method:</strong> Bagging (Bootstrap Aggregating)</li>
+            <li><strong>ข้อดี:</strong> ลด Variance, ทนต่อ Overfitting</li>
+            <li><strong>Voting:</strong> Majority vote จาก 100 ต้นไม้</li>
+        </ul>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:10px;">
+            <span class="tag teal">Ensemble</span>
+            <span class="tag teal">Bagging</span>
+            <span class="tag teal">Binary Classification</span>
         </div>
-        """, unsafe_allow_html=True)
-        
-        # Input form with moonlit theme
-        st.markdown("""
-        <div style='background: rgba(26, 29, 46, 0.7); padding: 30px; border-radius: 15px; 
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-                    border: 1px solid rgba(107, 140, 174, 0.2); backdrop-filter: blur(10px);'>
-        """, unsafe_allow_html=True)
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("#### 👃 กลิ่น (Odor)")
-            o_c = st.selectbox("เลือกกลิ่น:", list(MUSHROOM_MAP['odor'].values()), label_visibility="collapsed", key="odor")
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("#### 🌈 สีครีบเห็ด (Gill Color)")
-            g_c = st.selectbox("เลือกสีครีบเห็ด:", list(MUSHROOM_MAP['gill-color'].values()), label_visibility="collapsed", key="gill")
-            
-        with col2:
-            st.markdown("#### 🎨 สีสปอร์ (Spore Color)")
-            s_c = st.selectbox("เลือกสีสปอร์:", list(MUSHROOM_MAP['spore-print-color'].values()), label_visibility="collapsed", key="spore")
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown("#### 👥 ลักษณะประชากร (Population)")
-            p_c = st.selectbox("เลือกลักษณะประชากร:", list(MUSHROOM_MAP['population'].values()), label_visibility="collapsed", key="pop")
+        """, accent_color="#38C9B0")
 
-        st.markdown("</div>", unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
+        info_panel("📈 Test Results", """
+        <div style="background:rgba(56,201,176,0.08); border:1px solid rgba(56,201,176,0.25); border-radius:8px; padding:12px 16px; margin-bottom:10px;">
+            <span style="color:#38C9B0; font-weight:700;">✅ Accuracy 100%</span> — Perfect Classification
+        </div>
+        <p style="color:#A8B2C6; font-size:0.9rem; margin:0; line-height:1.7;">
+            ฟีเจอร์ <strong>odor</strong> และ <strong>spore-print-color</strong> มี correlation
+            กับ class สูงมาก ทำให้โมเดลแยกได้เด็ดขาด
+        </p>
+        """, accent_color="#38C9B0")
 
-        # Analyze button
-        col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
-        with col_btn2:
-            if st.button("🔍 วิเคราะห์ผล", use_container_width=True):
-                with st.spinner('กำลังวิเคราะห์...'):
-                    def get_k(v, m): return next(k for k, val in m.items() if v == val)
+
+# ══════════════════════════════════════════════════════════════════════════
+# PAGE: Mushroom Demo
+# ══════════════════════════════════════════════════════════════════════════
+elif page == "🍄  ทดสอบจำแนกเห็ด  (ML)":
+
+    st.markdown("""
+    <div style="margin-bottom:4px;">
+        <span style="font-family:'Space Mono',monospace; font-size:0.7rem; color:#38C9B0; letter-spacing:0.15em; text-transform:uppercase;">Demo — Machine Learning</span>
+    </div>
+    <h1 style="color:#D6DCF0; margin-bottom:4px;">Mushroom Classifier</h1>
+    <p style="color:#7A84A6; font-size:1rem;">ระบุลักษณะเห็ดแล้ว AI จะบอกว่ากินได้หรือมีพิษ</p>
+    """, unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    if not model_ready:
+        st.error("⚠️ โมเดลยังไม่พร้อม — กรุณาตรวจสอบไฟล์ใน /models")
+    else:
+        col_form, col_out = st.columns([1, 1], gap="large")
+
+        with col_form:
+            section("🔬", "ลักษณะของเห็ด", "teal")
+
+            st.markdown('<p style="font-family:\'Space Mono\',monospace; font-size:0.7rem; color:#7A84A6; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">👃 กลิ่น (Odor)</p>', unsafe_allow_html=True)
+            o_c = st.selectbox(
+                "odor",
+                options=list(MUSHROOM_MAP['odor'].values()),
+                label_visibility="collapsed",
+                key="odor"
+            )
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown('<p style="font-family:\'Space Mono\',monospace; font-size:0.7rem; color:#7A84A6; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">🌈 สีครีบเห็ด (Gill Color)</p>', unsafe_allow_html=True)
+            g_c = st.selectbox(
+                "gill",
+                options=list(MUSHROOM_MAP['gill-color'].values()),
+                label_visibility="collapsed",
+                key="gill"
+            )
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown('<p style="font-family:\'Space Mono\',monospace; font-size:0.7rem; color:#7A84A6; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">🎨 สีสปอร์ (Spore Print Color)</p>', unsafe_allow_html=True)
+            s_c = st.selectbox(
+                "spore",
+                options=list(MUSHROOM_MAP['spore-print-color'].values()),
+                label_visibility="collapsed",
+                key="spore"
+            )
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown('<p style="font-family:\'Space Mono\',monospace; font-size:0.7rem; color:#7A84A6; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">👥 ลักษณะประชากร (Population)</p>', unsafe_allow_html=True)
+            p_c = st.selectbox(
+                "population",
+                options=list(MUSHROOM_MAP['population'].values()),
+                label_visibility="collapsed",
+                key="pop"
+            )
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            analyze = st.button("🔍  วิเคราะห์ผล", use_container_width=True)
+
+        with col_out:
+            section("📊", "ผลการจำแนก", "teal")
+
+            if not analyze:
+                st.markdown("""
+                <div style="background:var(--panel); border:1px dashed rgba(255,255,255,0.1); border-radius:14px;
+                             padding:80px 20px; text-align:center; color:#7A84A6; margin-top:16px;">
+                    <div style="font-size:3rem; margin-bottom:12px; opacity:0.4;">🍄</div>
+                    <p style="margin:0; font-size:0.9rem;">กดปุ่ม "วิเคราะห์ผล" เพื่อดูผลลัพธ์</p>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                with st.spinner("กำลังวิเคราะห์…"):
+                    def get_key(val, mapping):
+                        return next(k for k, v in mapping.items() if v == val)
+
                     vec = np.zeros((1, 22))
-                    vec[0, 4] = mush_encoders['odor'].transform([get_k(o_c, MUSHROOM_MAP['odor'])])[0]
-                    vec[0, 9] = mush_encoders['gill-color'].transform([get_k(g_c, MUSHROOM_MAP['gill-color'])])[0]
-                    vec[0, 20] = mush_encoders['spore-print-color'].transform([get_k(s_c, MUSHROOM_MAP['spore-print-color'])])[0]
-                    vec[0, 21] = mush_encoders['population'].transform([get_k(p_c, MUSHROOM_MAP['population'])])[0]
-                    
-                    res = mush_model.predict(vec)
-                    
-                    if res[0] == 0:
-                        st.markdown("""
-                        <div style='background: linear-gradient(135deg, #2A4F4F 0%, #1A3535 100%); 
-                                    padding: 40px; border-radius: 15px; text-align: center; color: #E8EAF6;
-                                    box-shadow: 0 4px 25px rgba(127, 205, 205, 0.5); margin-top: 30px;
-                                    border: 1px solid rgba(127, 205, 205, 0.4);'>
-                            <h1 style='margin: 0; font-size: 3em; color: #7FCDCD; border: none; text-shadow: 0 0 30px rgba(127, 205, 205, 0.6);'>✅</h1>
-                            <h2 style='margin: 20px 0 10px 0; color: #A8B2C6; border: none;'>เห็ดนี้กินได้</h2>
-                            <h3 style='margin: 0; color: #D0D8E6; opacity: 0.9;'>(Edible Mushroom)</h3>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    else:
-                        st.markdown("""
-                        <div style='background: linear-gradient(135deg, #4F2A2A 0%, #352020 100%); 
-                                    padding: 40px; border-radius: 15px; text-align: center; color: #E8EAF6;
-                                    box-shadow: 0 4px 25px rgba(212, 99, 124, 0.5); margin-top: 30px;
-                                    border: 1px solid rgba(212, 99, 124, 0.4);'>
-                            <h1 style='margin: 0; font-size: 3em; color: #D4637C; border: none; text-shadow: 0 0 30px rgba(212, 99, 124, 0.6);'>⚠️</h1>
-                            <h2 style='margin: 20px 0 10px 0; color: #A8B2C6; border: none;'>เห็ดนี้มีพิษ</h2>
-                            <h3 style='margin: 0; color: #D0D8E6; opacity: 0.9;'>(Poisonous Mushroom)</h3>
-                        </div>
-                        """, unsafe_allow_html=True)
+                    vec[0, 4]  = mush_encoders['odor'].transform([get_key(o_c, MUSHROOM_MAP['odor'])])[0]
+                    vec[0, 9]  = mush_encoders['gill-color'].transform([get_key(g_c, MUSHROOM_MAP['gill-color'])])[0]
+                    vec[0, 20] = mush_encoders['spore-print-color'].transform([get_key(s_c, MUSHROOM_MAP['spore-print-color'])])[0]
+                    vec[0, 21] = mush_encoders['population'].transform([get_key(p_c, MUSHROOM_MAP['population'])])[0]
+
+                    result = mush_model.predict(vec)[0]
+
+                if result == 0:
+                    st.markdown("""
+                    <div class="result-safe">
+                        <div class="icon">✅</div>
+                        <div class="title">เห็ดกินได้</div>
+                        <div class="sub">Edible Mushroom — ปลอดภัยสำหรับบริโภค</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown("""
+                    <div class="result-danger">
+                        <div class="icon">☠️</div>
+                        <div class="title">เห็ดมีพิษ</div>
+                        <div class="sub">Poisonous Mushroom — อันตราย ห้ามบริโภค</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                # Summary of inputs
+                st.markdown("<br>", unsafe_allow_html=True)
+                st.markdown(f"""
+                <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px 20px;">
+                    <p style="font-family:'Space Mono',monospace; font-size:0.7rem; color:#7A84A6; text-transform:uppercase; letter-spacing:0.1em; margin:0 0 12px;">Input Summary</p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:0.85rem; color:#A8B2C6;">
+                        <div>👃 {o_c}</div>
+                        <div>🌈 {g_c}</div>
+                        <div>🎨 {s_c}</div>
+                        <div>👥 {p_c}</div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
