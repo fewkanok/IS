@@ -10,7 +10,7 @@ import os
 # 1. SETTINGS & CONFIG
 # ==========================================
 st.set_page_config(
-    page_title="IS 2569 — AI Analysis",
+    page_title="IS 2568 — AI Analysis",
     page_icon="🌌",
     layout="wide",
     initial_sidebar_state="expanded"
