@@ -323,7 +323,7 @@ with st.sidebar:
     <div class="sidebar-badge">
         <div style="font-size:1.6rem; margin-bottom:6px;">🌌</div>
         <div style="font-family:'Space Mono',monospace; font-size:0.7rem; color:#7A84A6; letter-spacing:0.12em; text-transform:uppercase;">Project</div>
-        <div style="font-weight:700; font-size:1.05rem; color:#D6DCF0; margin:2px 0;">IS 2569</div>
+        <div style="font-weight:700; font-size:1.05rem; color:#D6DCF0; margin:2px 0;">IS 2568</div>
         <div style="font-size:0.8rem; color:#7A84A6;">AI Analysis Platform</div>
     </div>
     """, unsafe_allow_html=True)
